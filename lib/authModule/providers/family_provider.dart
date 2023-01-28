@@ -1,0 +1,138 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:heda_saathi/authModule/models/family_model.dart';
+import 'package:heda_saathi/homeModule/models/saathi_model.dart';
+import 'package:http/http.dart' as http;
+import '../../api.dart';
+
+class FamiliesProvider with ChangeNotifier {
+  List<Saathi> familyMembers = [];
+    
+  var userIndex;
+
+  // ignore: prefer_final_fields
+  Family _family = Family(id: '1', memberIds: [], metaData: [[]]);
+
+  Family get family => _family;
+
+  loadFamilyandRelations(String familyId, String userId) async {
+
+     familyMembers.clear();
+    _family = Family(id: '1', memberIds: [], metaData: [[]]);
+
+    await fetchFamily(familyId: familyId);
+
+    await fetchMembers(userId: userId);
+
+    loadRelations(userId);
+    notifyListeners();
+  }
+
+  fetchFamily({String familyId = ''}) async {
+    //fetchFamilyQuery.
+    try {
+      var url = '${webApi['domain']}/families/family/';
+
+      var str = json.encode({"familyId": familyId});
+      final response = await http.post(
+        Uri.parse(url),
+        body: str,
+      );
+
+      var responseBody = json.decode(response.body);
+      print(responseBody);
+
+      List<String> membersIdsString = [];
+      for (int i = 0; i < responseBody["family"]["memberIds"].length; i++) {
+        var id = responseBody["family"]["memberIds"][i].toString();
+        print(id);
+        membersIdsString.add(id);
+      }
+
+      _family = Family(
+        id: responseBody['family']["_id"],
+        memberIds: membersIdsString,
+        metaData: responseBody['family']['metaData'],
+      );
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  fetchMembers({required String userId}) async {
+    Map<String, String> headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Charset': 'utf-8'
+    };
+
+    var url = "${webApi['domain']}/users/fetchMembers";
+    var ids = family.memberIds;
+    userIndex = family.memberIds.indexOf(userId);
+    var str = json.encode({"ids": ids});
+
+    try {
+      var response =
+          await http.post(Uri.parse(url), body: str, headers: headers);
+      var responseData = (json.decode(response.body));
+      print(responseData);
+      for (int i = 0; i < responseData["saathis"].length; i++) {
+        var rs = responseData["saathis"][i];
+        print(rs);
+        familyMembers.add(Saathi(
+            userId: rs['userId'].toString(),
+            dob: DateTime.now(),
+            email: rs['email'].toString(),
+            profession: rs['profession'].toString(),
+            place: rs['place'].toString(),
+            phone: rs['phone'].toString(),
+            gender: rs['gender'].toString(),
+            avatar: rs['avatar'].toString(),
+            name: rs['name'].toString()));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  loadRelations(userId) {
+    int i = 0;
+    for (var id in family.memberIds) {
+      if (i == userIndex) {
+        familyMembers.removeAt(i);
+        i++;
+        continue;
+      }
+      var metaDataId = family.metaData[userIndex][i];
+      var flag = 1;
+      if (metaDataId < 0) {
+        metaDataId = metaDataId * (-1);
+        flag = 0;
+      }
+      familyMembers.firstWhere((saathi) => saathi.userId == id).relation =
+          _relations[metaDataId][flag];
+      i++;
+    }
+  }
+
+  // /*IMP!*/
+  static const List<List<String>> _relations = [
+    ['SELF', 'SELF'],
+    ['HUSBAND', 'WIFE'],
+    ['FATHER', 'SON'],
+    ['FATHER', 'DAUGHTER'],
+    ['MOTHER', 'SON'],
+    ['MOTHER', 'DAUGHTER'],
+    ['BROTHER', 'SISTER'],
+    ['BROTHER', 'BROTHER'],
+    ['UNCLE', 'NIECE'],
+    ['AUNT', 'NIECE'],
+    ['COUSIN', 'COUSIN'],
+    ['GRANDFATHER', 'GRANDSON'],
+    ['GRANDMOTHER', 'GRANDSON'],
+    ['GRANDFATHER', 'GRANDDAUGHTER'],
+    ['GRANDMOTHER', 'GRANDDAUGHTER'],
+    ['FATHER IN LAW', 'SON-IN-LAW'],
+    ['FATHER IN LAW', 'DAUGHTER-IN-LAW']
+  ];
+}

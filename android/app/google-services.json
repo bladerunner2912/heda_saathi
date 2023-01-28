@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "338990588790",
+    "project_id": "hedasaathi-723d0",
+    "storage_bucket": "hedasaathi-723d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338990588790:android:933b4aad237fe6a2985057",
+        "android_client_info": {
+          "package_name": "com.example.heda_saathi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338990588790-vqnpl0gkntsgjhp8pld8mn9ns8r3dn92.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAalGTIerGZcbhcUsrfSDjLP9tpCQ6vxNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338990588790-vqnpl0gkntsgjhp8pld8mn9ns8r3dn92.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
