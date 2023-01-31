@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/providers/family_provider.dart';
 import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
+import 'package:heda_saathi/featuresModule/providers/search_provider.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,16 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.of(context).pushReplacement<void, void>(MaterialPageRoute<void>(
       builder: (BuildContext context) => HomeScreenWidget(),
     ));
+  }
+
+  loadFamily(familyId, id) {
+    Provider.of<FamiliesProvider>(context, listen: false)
+        .loadFamilyandRelations(familyId, id);
+  }
+
+  loadEvents() {
+    Provider.of<SearchProvider>(context, listen: false)
+        .fetchBirthdaysAndAnniversary();
   }
 
   @override
@@ -59,9 +70,9 @@ class _SplashScreenState extends State<SplashScreen> {
     final user = await Provider.of<AuthProvider>(context, listen: false)
         .loginUser(phone: accessToken['phone']);
 
-    if (user!=null) {
-      // ignore: use_build_context_synchronously
-      Provider.of<FamiliesProvider>(context, listen: false).loadFamilyandRelations(user.familyId, user.id);
+    if (user != null) {
+      loadFamily(user.familyId, user.id);
+      loadEvents();
       pushHomeScreen();
       return;
     } else {

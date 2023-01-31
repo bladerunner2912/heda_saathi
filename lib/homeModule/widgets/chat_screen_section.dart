@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/screens/chat_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../main.dart';
@@ -63,9 +64,29 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
             ),
             ElevatedButton(
-                onPressed: () => pickImage(),
+                onPressed: () => showDialogBox(
+                      dW: widget.dW,
+                      tS: widget.tS,
+                      buttonOne: 'YES',
+                      buttonOneFunction: () {
+                        Navigator.of(context).pop();
+                      },
+                      buttonTwo: 'NO',
+                      buttonTwoFunction: () {},
+                      dialogmessage:
+                          'Are you sure you want the proposed changes in your profile.',
+                      context: context,
+                    ),
                 child: const Text('Upload Image')),
-            // Container(
+           
+          ]),
+    );
+  }
+}
+
+
+
+ // Container(
             //   color: const Color(0xffe5e9f0),
             //   padding: EdgeInsets.symmetric(
             //       vertical: widget.dW * 0.022, horizontal: widget.dW * 0.06),
@@ -198,7 +219,3 @@ class _ChatScreenState extends State<ChatScreen> {
             //         ],
             //       )),
             // ),
-          ]),
-    );
-  }
-}

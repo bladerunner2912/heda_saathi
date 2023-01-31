@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/authModule/widgets/custom_button.dart';
+import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +32,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String profilePic = '';
   late User user;
   bool edited = false;
+  double dW = 0;
+  double tS = 0;
+  final ImagePicker _picker = ImagePicker();
+
+  var _image;
+
+  pickImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: dW * 0.35,
+      maxHeight: dW * 0.27,
+      imageQuality: 100,
+    );
+
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+      });
+    }
+  }
 
   void dateChanger(
     TextEditingController textController,
@@ -36,12 +60,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     selectedDate = await showDatePicker(
         context: context,
-        initialDate: DateFormat('dd/MM/yy').parse('${user.dob.day}/${user.dob.month}/${user.dob.year}'),
+        initialDate: user.dob,
         firstDate: DateTime(1930),
         lastDate: DateTime.now()) as DateTime;
 
     if (selectedDate != user.dob) {
-      textController.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+      textController.text = DateFormat('MM/dd/yy').format(selectedDate);
       edited = true;
       setState(() {});
     }
@@ -50,53 +74,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
   sendRequest(
     double dW,
   ) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        child: Container(
-            padding: EdgeInsets.only(
-                left: dW * 0.05, top: dW * 0.03, right: dW * 0.05),
-            width: dW * 0.5,
-            height: dW * 0.5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(
-                    child: Text(
-                        'Your Profile edit request is submitted. Changes would be reflected after administrator approval.')),
-                const Spacer(),
-                CustomAuthButton(
-                    onTap: () {
-                      Navigator.pop(context);
-                      auth.toggleProfileEdit();
-                    },
-                    buttonLabel: 'OK'),
-                const Spacer(),
-              ],
-            )),
-      ),
-    );
+    showDialogBox(
+        context: context,
+        dialogmessage: 'Are you sure you want these changes in your profile.',
+        buttonOne: 'Yes',
+        buttonOneFunction: () {
+          Navigator.of(context).pop();
+          showDialogBox(
+              context: context,
+              dialogmessage: 'Your Request Has Been Accepted',
+              buttonOne: 'Ok',
+              buttonOneFunction: () {
+                Navigator.of(context).pop();
+              },
+              dW: dW,
+              tS: tS);
+        },
+        buttonTwo: 'No',
+        buttonTwoFunction: () {
+          myInit(user);
+          Navigator.of(context).pop();
+        },
+        dW: dW,
+        tS: tS);
+  }
+
+  myInit(User user) {
+    name.text = user.name;
+    mobileNo.text = user.phone;
+    email.text = user.email;
+    dob.text = DateFormat('dd/MM/yy').format(user.dob);
+    if (user.married) {
+      anniv.text =
+          '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
+    }
+    profilePic = user.avatar;
   }
 
   @override
   void initState() {
     auth = Provider.of<AuthProvider>(context, listen: false);
     user = auth.loadedUser;
-    // TODO: implement initState
-    name.text = user.name;
-    mobileNo.text = user.phone;
-    email.text = user.email;
-    dob.text = '${user.dob.day}/${user.dob.month}/${user.dob.year}';
-    if(user.married)
-{    anniv.text = '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
-}    profilePic = user.avatar;
+    myInit(user);
   }
 
   @override
   Widget build(BuildContext context) {
-    final dW = MediaQuery.of(context).size.width;
-    final tS = MediaQuery.of(context).textScaleFactor;
+    dW = MediaQuery.of(context).size.width;
+    tS = MediaQuery.of(context).textScaleFactor;
     user = Provider.of<AuthProvider>(
       context,
     ).loadedUser;
@@ -128,22 +153,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: dW,
               child: Row(
                 children: [
-                 SizedBox(
+                  SizedBox(
                     height: dW * 0.27,
                     width: dW * 0.27,
                     child: FadeInImage(
                       width: dW * 0.27,
-                      image: NetworkImage(profilePic,),
-                      placeholder: AssetImage(user.gender == 'Male'
-                          ? 'assets/images/menProfile.jpg'
-                          : 'assets/images/womenProfile.png' , ),
+                      image: NetworkImage(
+                        profilePic,
+                      ),
+                      placeholder: AssetImage(
+                        user.gender == 'Male'
+                            ? 'assets/images/menProfile.jpg'
+                            : 'assets/images/womenProfile.png',
+                      ),
                       imageErrorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: Colors.white,
-                         padding : user.gender == 'Male'? EdgeInsets.all(0) : EdgeInsets.symmetric(horizontal:dW * 0.0265,),
-                          width: dW * 0.27,
+                          padding: user.gender == 'Male'
+                              ? EdgeInsets.all(0)
+                              : EdgeInsets.symmetric(
+                                  horizontal: dW * 0.0265,
+                                ),
+                          width: _image != null ? dW * 0.35 : dW * 0.27,
                           height: dW * 0.27,
-                          child: Image.asset(
+                          child: _image != null
+                              ? Image.file(
+                                  _image,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
                             user.gender == 'Male'
                                 ? 'assets/images/menProfile.jpg'
                                 : 'assets/images/womenProfile2.png',
@@ -155,6 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const Spacer(),
                   GestureDetector(
+                    onTap: () => pickImage(),
                     child: Text(
                       'Change profile photo',
                       style: TextStyle(
@@ -169,8 +208,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               )),
           user.editRequest
               ? SizedBox(
-                height: dW*0.8 ,
-                child: Center(
+                  height: dW * 0.8,
+                  child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: Text(
@@ -180,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-              )
+                )
               : Column(
                   children: [
                     Form(
@@ -204,9 +243,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     const Text('MOBILE NO. :'),
                                     const Text('EMAIL :'),
                                     const Text('DATE OF BIRTHDAY :'),
-                                      if (user.married)
-
-                                    const Text('ANNIVERSARY :'),
+                                    if (user.married)
+                                      const Text('ANNIVERSARY :'),
                                   ],
                                 ),
                               ),
@@ -246,16 +284,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           unenabled: true,
                                         ),
                                       ),
-                                      if(user.married)
-                                      GestureDetector(
-                                        onTap: (() => dateChanger(anniv)),
-                                        child: ProfileTextFormField(
-                                          tS: tS,
-                                          controller: anniv,
-                                          tIA: TextInputType.text,
-                                          unenabled: true,
+                                      if (user.married)
+                                        GestureDetector(
+                                          onTap: (() => dateChanger(anniv)),
+                                          child: ProfileTextFormField(
+                                            tS: tS,
+                                            controller: anniv,
+                                            tIA: TextInputType.text,
+                                            unenabled: true,
+                                          ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -269,11 +307,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     CustomAuthButton(
                         onTap: () {
-                        if(
-                          name.text!=user.name||
-                          mobileNo.text!=user.phone||
-                          email.text != user.email || edited
-                        )  sendRequest(dW);
+                          if (name.text != user.name ||
+                              mobileNo.text != user.phone ||
+                              email.text != user.email ||
+                              edited) sendRequest(dW);
                         },
                         buttonLabel: 'SEND REQUEST'),
                     SizedBox(
@@ -283,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'NOTE - CHANGE IN PROFILE INFORMATION OTHER\nTHAN THIS WILL BE DONE BY EMAIL',
+                          'Note - Changes other than this can be carried out by sending email. Your changes will reflect in meantime.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 14 * tS, fontWeight: FontWeight.w500),

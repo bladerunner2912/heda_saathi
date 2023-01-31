@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/models/saathi_model.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -9,13 +10,28 @@ import '/api.dart';
 
 class SearchProvider with ChangeNotifier {
   List<Saathi> _searchedMembers = [];
+  List<Saathi> presentEvents = [];
+  List<Saathi> pastEvents = [];
+  List<Saathi> upcomingEvents = [];
+
   int limit = 10;
   int skip = 0;
+
+  late Saathi birthdayFetchUser;
 
   List<Saathi> get searchedMembers => _searchedMembers;
 
   clear() {
     _searchedMembers = [];
+  }
+
+  allEventsUserSearch(String userId) {
+    List<Saathi> allEventFetched = [];
+    allEventFetched.addAll(presentEvents);
+    allEventFetched.addAll(pastEvents);
+    allEventFetched.addAll(upcomingEvents);
+
+    return allEventFetched.firstWhere((user) => user.userId == userId);
   }
 
   searchMember({
@@ -26,7 +42,6 @@ class SearchProvider with ChangeNotifier {
     String? mobileNo = '',
     DateTime? birth,
   }) async {
-
     var url = '${webApi['domain']}/users/searchMembers';
 
     Map<String, String> sendStr;
@@ -36,7 +51,7 @@ class SearchProvider with ChangeNotifier {
     };
 
     if (birth != null) {
-      sendStr.addAll({'dob': DateFormat('dd/MM/yyyy').format(birth)});
+      sendStr.addAll({'dob': birth.toIso8601String()});
       //  /.ad({'dob': DateFormat('dd/MM/yyyy').format(birth)});
     }
 
@@ -62,25 +77,15 @@ class SearchProvider with ChangeNotifier {
       final response = await http.post(
         Uri.parse(url),
         body: str,
-        headers: {"Content-Type": "application/json",},
+        headers: {
+          "Content-Type": "application/json",
+        },
       );
 
       var responseData = json.decode(response.body);
       print(responseData);
       // print(responseData['users'][0]['_id']);
-      for (int i = 0; i < responseData['users'].length; i++) {
-        var rs = responseData['users'][i];
-        searchedMembers.add(Saathi(
-            userId: rs['userId'],
-            dob: DateTime.now(),
-            email: rs['email'],
-            profession: rs['profession'] ?? 'DOCTORRR',
-            place: rs['place'] ?? 'DOCTORRR',
-            phone: rs['phone'] ?? 'DOCTORRR',
-            gender: rs['gender'] ?? 'DOCTORRR',
-            avatar: rs['avatar']??'',
-            name: rs['name'] ?? 'DOCTORRR'));
-      }
+      loadSaathis(responseData, searchedMembers, 'users');
 
       skip += limit;
       notifyListeners();
@@ -88,6 +93,29 @@ class SearchProvider with ChangeNotifier {
     } catch (e) {
       print(e);
       return searchedMembers;
+    }
+  }
+
+  fetchBirthdaysAndAnniversary() async {
+    presentEvents.clear();
+    pastEvents.clear();
+    upcomingEvents.clear();
+
+    var url = '${webApi['domain']}/users/birthdayAnniversary';
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      var responseData = json.decode(response.body);
+      print(responseData);
+      loadSaathis(responseData, presentEvents, 'presentEvents');
+      loadSaathis(responseData, pastEvents, 'pastEvents');
+      loadSaathis(responseData, upcomingEvents, 'upcomingEvents');
+    } catch (e) {
+      throw e;
     }
   }
 }

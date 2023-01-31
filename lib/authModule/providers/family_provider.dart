@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:heda_saathi/authModule/models/family_model.dart';
+import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/models/saathi_model.dart';
 import 'package:http/http.dart' as http;
 import '../../api.dart';
 
 class FamiliesProvider with ChangeNotifier {
   List<Saathi> familyMembers = [];
-    
+
   var userIndex;
 
   // ignore: prefer_final_fields
@@ -17,8 +18,7 @@ class FamiliesProvider with ChangeNotifier {
   Family get family => _family;
 
   loadFamilyandRelations(String familyId, String userId) async {
-
-     familyMembers.clear();
+    familyMembers.clear();
     _family = Family(id: '1', memberIds: [], metaData: [[]]);
 
     await fetchFamily(familyId: familyId);
@@ -76,20 +76,7 @@ class FamiliesProvider with ChangeNotifier {
           await http.post(Uri.parse(url), body: str, headers: headers);
       var responseData = (json.decode(response.body));
       print(responseData);
-      for (int i = 0; i < responseData["saathis"].length; i++) {
-        var rs = responseData["saathis"][i];
-        print(rs);
-        familyMembers.add(Saathi(
-            userId: rs['userId'].toString(),
-            dob: DateTime.now(),
-            email: rs['email'].toString(),
-            profession: rs['profession'].toString(),
-            place: rs['place'].toString(),
-            phone: rs['phone'].toString(),
-            gender: rs['gender'].toString(),
-            avatar: rs['avatar'].toString(),
-            name: rs['name'].toString()));
-      }
+      loadSaathis(responseData, familyMembers, 'saathis');
     } catch (e) {
       print(e);
     }

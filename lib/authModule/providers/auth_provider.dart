@@ -32,8 +32,8 @@ class AuthProvider with ChangeNotifier {
       final respone = await http.post(Uri.parse(url),
           body: str, headers: {"Content-Type": "application/json"});
       var responeData = jsonDecode(respone.body);
-      var dob = responeData['user']['dob'] as String;
-      dob.replaceAll(RegExp('r/'), '-');
+       
+      // dob.replaceAll(RegExp('r/'), '-');
       print(responeData);
       loadedUser = User(
         address: responeData['user']['address'],
@@ -41,7 +41,7 @@ class AuthProvider with ChangeNotifier {
         pincode: responeData['user']['pincode'],
         profession: responeData['user']['profession'] ?? '',
         name: responeData['user']['name'],
-        dob: DateFormat('yyyy/MM/dd').parse(dob),
+        dob: DateTime.parse(responeData['user']['dob']),
         id: responeData['user']['_id'],
         gender: responeData['user']['gender'],
         avatar: responeData['user']['avatar'],

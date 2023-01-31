@@ -5,6 +5,7 @@ import 'package:heda_saathi/authModule/providers/family_provider.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/featuresModule/providers/search_provider.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/saathi_model.dart';
@@ -13,8 +14,12 @@ import '../widgets/profile_text_form_field.dart';
 class SaathiProfileScreen extends StatefulWidget {
   final String memeberId;
   final bool isFamilyMember;
+  final bool birthDayFetch;
   const SaathiProfileScreen(
-      {this.isFamilyMember = false, super.key, required this.memeberId});
+      {this.isFamilyMember = false,
+      super.key,
+      required this.memeberId,
+      this.birthDayFetch = false});
 
   @override
   State<SaathiProfileScreen> createState() => _SaathiProfileScreenState();
@@ -42,15 +47,19 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
       user = Provider.of<FamiliesProvider>(context, listen: false)
           .familyMembers
           .firstWhere((member) => member.userId == widget.memeberId);
+    } else if (widget.birthDayFetch) {
+      user = Provider.of<SearchProvider>(context, listen: false)
+          .allEventsUserSearch(widget.memeberId);
     } else {
       user = Provider.of<SearchProvider>(context, listen: false)
           .searchedMembers
           .firstWhere((element) => element.userId == widget.memeberId);
     }
-    name.text =  user.name;
+
+    name.text = user.name;
     mobileNo.text = user.phone;
     email.text = user.email;
-    dob.text = '${user.dob.day}/${user.dob.month}/${user.dob.year}';
+    dob.text = DateFormat('dd/MM/yy').format(user.dob);
     // if (user.married) {
     //   anniv.text =
     //       '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
@@ -82,8 +91,7 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
             padding: const EdgeInsets.all(18.0),
             child: Text(
               'SMARIKA REGISTERATION NO : 2023${user.userId.toString().substring(0, 6).toUpperCase()}',
-              style:
-                  TextStyle(fontWeight: FontWeight.w500, fontSize: 14 * tS),
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14 * tS),
             ),
           ),
           SizedBox(
@@ -161,8 +169,7 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
                           width: dW * 0.4,
                           child: Form(
                             child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               // ignore: prefer_const_literals_to_create_immutables
                               children: [
@@ -221,8 +228,8 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
           ),
           Container(
             width: dW,
-            padding: EdgeInsets.symmetric(
-                vertical: dW * 0.06, horizontal: dW * 0.1),
+            padding:
+                EdgeInsets.symmetric(vertical: dW * 0.06, horizontal: dW * 0.1),
             margin: EdgeInsets.only(top: dW * 0.15),
             child: Row(
               children: [

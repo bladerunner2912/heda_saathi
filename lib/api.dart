@@ -1,4 +1,6 @@
-var webApi = {'domain': 'https://ea81-182-48-222-69.in.ngrok.io'}; // DEV bladerunner
+var webApi = {
+  'domain': 'https://baf5-182-48-216-131.in.ngrok.io'
+}; // DEV bladerunner
 
 var endPoints = {
   
