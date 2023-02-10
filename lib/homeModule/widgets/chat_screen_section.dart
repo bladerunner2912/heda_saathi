@@ -1,8 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/screens/chat_widget.dart';
+import 'package:heda_saathi/homeModule/widgets/custom_dialog.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../main.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -18,29 +23,170 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final ImagePicker _picker = ImagePicker();
-  var _image;
+  File? _image;
+  late ImageSource source;
+  late AuthProvider auth;
 
-  pickImage() async {
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: widget.dW * 0.4,
-      maxHeight: widget.dH * 0.4,
-      imageQuality: 100,
-    );
+  // pickImage() async {
+  //   await showModalBottomSheet(
+  //       context: context,
+  //       builder: (context) {
+  //         return Wrap(children: [
+  //           Row(
+  //             children: [
+  //               const Spacer(),
+  //               GestureDetector(
+  //                 onTap: () {
+  //                   setState(() {
+  //                     source = ImageSource.camera;
+  //                   });
+  //                   Navigator.pop(context);
+  //                 },
+  //                 child: SizedBox(
+  //                   height: widget.dW * 0.2,
+  //                   child: Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.center,
+  //                     children: [
+  //                       Icon(Icons.camera, size: widget.dW * 0.1),
+  //                       const Spacer(),
+  //                       const Text('Camera'),
+  //                       const Spacer(),
+  //                       const Spacer(),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               const Spacer(),
+  //               GestureDetector(
+  //                 onTap: () {
+  //                   setState(() {
+  //                     source = ImageSource.gallery;
+  //                   });
+  //                   Navigator.pop(context);
+  //                 },
+  //                 child: SizedBox(
+  //                   height: widget.dW * 0.2,
+  //                   child: Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.center,
+  //                     children: [
+  //                       Icon(Icons.browse_gallery, size: widget.dW * 0.1),
+  //                       const Spacer(),
+  //                       const Text('Gallery'),
+  //                       const Spacer(),
+  //                       const Spacer()
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               const Spacer(),
+  //               const Spacer(),
+  //               const Spacer(),
+  //               const Spacer(),
+  //               const Spacer(),
+  //             ],
+  //           ),
+  //         ]);
+  //       });
 
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-      });
-    }
-  }
+  //   final XFile? image = await _picker.pickImage(
+  //     source: source,
+  //     maxWidth: widget.dW * 0.5,
+  //     maxHeight: widget.dH * 0.5,
+  //     imageQuality: 100,
+  //   );
 
-  switchConnectScreen() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: ((context) =>
-                ConnectScreen(dH: widget.dH, dW: widget.dW, tS: widget.tS))));
+  //   // ! ignore: use_build_context_synchronously
+
+  //   if (image != null) {
+  //     _image = File(image.path);
+  //     String objectName = fileName(_image!);
+  //     String objectType = fileType(_image!);
+  //     if (objectType != "png" && objectType != "jpg" && objectType != "jpeg") {
+  //       _image = null;
+  //       return;
+  //     }
+  //     print('uploading');
+  //     auth.uploadToS3Bucket(
+  //         image: _image!, objectName: objectName, objectType: objectType);
+  //     setState(() {});
+  //     const SnackBar(content: Text('Image Upload Succesful'));
+  //   } else {
+  //     return const SnackBar(content: Text('Image Upload Failed'));
+  //   }
+  // }
+
+  // _showOpenAppSettingsDialog(context) {
+  //   return CustomDialog.show(
+  //     context,
+  //     'Permission needed',
+  //     'Photos permission is needed to select photos',
+  //     'Open settings',
+  //     openAppSettings,
+  //   );
+  // }
+
+  // onAddPhotoClicked(context) async {
+  //   Permission permission;
+
+  //   if (Platform.isIOS) {
+  //     permission = Permission.photos;
+  //   } else {
+  //     permission = Permission.storage;
+  //   }
+  //   PermissionStatus permissionStatus = await permission.request();
+
+  //   print(permissionStatus);
+
+  //   if (permissionStatus == PermissionStatus.restricted) {
+  //     _showOpenAppSettingsDialog(context);
+  //     permissionStatus = await permission.status;
+  //     if (permissionStatus != PermissionStatus.granted) {
+  //       return;
+  //     }
+  //   }
+
+  //   if (permissionStatus == PermissionStatus.permanentlyDenied) {
+  //     _showOpenAppSettingsDialog(context);
+
+  //     permissionStatus = await permission.status;
+
+  //     if (permissionStatus != PermissionStatus.granted) {
+  //       //Only continue if permission granted
+  //       return;
+  //     }
+  //   }
+
+  //   if (permissionStatus == PermissionStatus.denied) {
+  //     if (Platform.isIOS) {
+  //       _showOpenAppSettingsDialog(context);
+  //     } else {
+  //       permissionStatus = await permission.request();
+  //     }
+
+  //     if (permissionStatus != PermissionStatus.granted) {
+  //       //Only continue if permission granted
+  //       return;
+  //     }
+  //   }
+
+  //   if (permissionStatus == PermissionStatus.granted) {
+  //     pickImage();
+  //   }
+  // }
+
+  // switchToConnectScreen() {
+  //   Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: ((context) =>
+  //               ConnectScreen(dH: widget.dH, dW: widget.dW, tS: widget.tS))));
+  // }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    auth = Provider.of<AuthProvider>(context, listen: false);
   }
 
   @override
@@ -48,41 +194,55 @@ class _ChatScreenState extends State<ChatScreen> {
     return SizedBox(
       height: widget.dH,
       width: widget.dW,
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/coming.png'),
-            Container(
-              color: Colors.black,
-              height: widget.dW * 0.5,
-              width: widget.dW * 0.8,
-              child: _image != null
-                  ? Image.file(_image)
-                  : Container(
-                      color: Colors.red,
-                    ),
-            ),
-            ElevatedButton(
-                onPressed: () => showDialogBox(
-                      dW: widget.dW,
-                      tS: widget.tS,
-                      buttonOne: 'YES',
-                      buttonOneFunction: () {
-                        Navigator.of(context).pop();
-                      },
-                      buttonTwo: 'NO',
-                      buttonTwoFunction: () {},
-                      dialogmessage:
-                          'Are you sure you want the proposed changes in your profile.',
-                      context: context,
-                    ),
-                child: const Text('Upload Image')),
-           
-          ]),
+      child: Builder(
+        builder: (context) => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/coming.png'),
+              // Container(
+              //   color: Colors.black,
+              //   height: widget.dW * 0.5,
+              //   width: widget.dW * 0.8,
+              //   child: _image != null
+              //       ? Image.file(_image!)
+              //       : Container(
+              //           color: Colors.red,
+              //         ),
+              // ),
+              // ElevatedButton(
+              //     onPressed: () => {},
+              //     // onPressed: () async {
+              //     //   String url = "https://www.google.com";
+              //     //   var urllaunchable = await canLaunchUrl(
+              //     //       Uri.parse(url)); //canLaunch is from url_launcher package
+              //     //   if (urllaunchable) {
+              //     //     await launchUrl(Uri.parse(
+              //     //         url)); //launch is from url_launcher package to launch URL
+              //     //   } else {
+              //     //     print("URL can't be launched.");
+              //     //   }
+              //     // },
+              //     // onPressed: () => showDialogBox(
+              //     //       dW: widget.dW,
+              //     //       tS: widget.tS,
+              //     //       buttonOne: 'YES',
+              //     //       buttonOneFunction: () {
+              //     //         Navigator.of(context).pop();
+              //     //       },
+              //     //       buttonTwo: 'NO',
+              //     //       buttonTwoFunction: () {},
+              //     //       dialogmessage:
+              //     //           'Are you sure you want the proposed changes in your profile.',
+              //     //       context: context,
+              //     //     ),
+              //     child: const Text('Upload Image')),
+            ]),
+      ),
     );
   }
 }
+
 
 
 

@@ -1,6 +1,6 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/family_model.dart';
+import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 import 'package:heda_saathi/featuresModule/screens/notifications_screen.dart';
 import 'package:heda_saathi/homeModule/screens/home_widget.dart';
@@ -24,6 +24,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
   late AuthProvider auth;
   late User user;
   late Family family;
+
 
   switchBottomNavBar(int value) {
     setState(() {
@@ -49,6 +50,8 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     final dW = MediaQuery.of(context).size.width;
     final dH = MediaQuery.of(context).size.height;
     final tS = MediaQuery.of(context).textScaleFactor;
+    final advertisments =
+        Provider.of<AdvertismentProvider>(context).advertsiments;
     final familyMembers = Provider.of<FamiliesProvider>(context).familyMembers;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -63,7 +66,13 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
           ? currentIndex != 2
               ? ChatScreen(dW: dW, dH: dH, tS: tS)
               : const NotificationsScreen()
-          : HomePage(dW: dW, dH: dH, user: user, tS: tS, auth: auth,familyMembers: familyMembers),
+          : HomePage(
+              dW: dW,
+              dH: dH,
+              tS: tS,
+              auth: auth,
+              advertisments: advertisments,
+              familyMembers: familyMembers),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 3,
         showSelectedLabels: false,

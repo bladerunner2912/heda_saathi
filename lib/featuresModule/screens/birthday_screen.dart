@@ -24,7 +24,6 @@ class _BirthdayScreenState extends State<BirthdayScreen> {
 
   myInit() async {
     var searcher = Provider.of<SearchProvider>(context, listen: false);
-    searcher.fetchBirthdaysAndAnniversary();
     presentEvents = searcher.presentEvents;
     pastEvents = searcher.pastEvents;
     upcomingEvents = searcher.upcomingEvents;

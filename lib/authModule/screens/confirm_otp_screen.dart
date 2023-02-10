@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/authModule/widgets/custom_button.dart';
-import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:otp_timer_button/otp_timer_button.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/auth_provider.dart';
 
 class OtpScreen extends StatefulWidget {
   final String number;
-   OtpScreen({required this.number, super.key});
+  final String otp;
+  OtpScreen({required this.number, super.key, required this.otp});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  late String otp;
   TextEditingController phoneNumberController = TextEditingController();
-
   OtpTimerButtonController controller = OtpTimerButtonController();
+  bool errorFlag = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -36,6 +34,7 @@ class _OtpScreenState extends State<OtpScreen> {
     final dW = MediaQuery.of(context).size.width;
     final dH = MediaQuery.of(context).size.height;
     final tS = MediaQuery.of(context).textScaleFactor;
+    final auth = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: customAppBar(dW),
@@ -112,8 +111,9 @@ class _OtpScreenState extends State<OtpScreen> {
                   controller: controller,
                   onPressed: () {
                     controller.startTimer();
+                    auth.sendOtp(phoneNumber: widget.number);
                   },
-                  text: Text(
+                  text: const Text(
                     'RESEND OTP',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                   ),
@@ -130,20 +130,33 @@ class _OtpScreenState extends State<OtpScreen> {
               height: dW * 0.025,
             ),
             OtpTextField(
+              onSubmit: ((value) {
+                otp = value;
+                setState(() => {});
+              }),
               enabledBorderColor: Colors.black,
               textStyle:
                   TextStyle(fontSize: 20 * tS, fontWeight: FontWeight.w500),
             ),
+            Visibility(
+                visible: errorFlag,
+                child: const Text('Invalid OTP!.Please try again later',
+                    style: TextStyle(color: Colors.red))),
             SizedBox(
               height: dW * 0.1,
             ),
             CustomAuthButton(
-                onTap: () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) =>  HomeScreenWidget()))
-                    },
+                onTap: () {
+                  if (widget.otp == otp) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => HomeScreenWidget()));
+                    return;
+                  }
+                  errorFlag = true;
+                  setState(
+                    () => {},
+                  );
+                },
                 buttonLabel: 'SUBMIT'),
           ]),
         ),

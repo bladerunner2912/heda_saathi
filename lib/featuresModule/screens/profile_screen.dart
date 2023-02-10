@@ -10,9 +10,11 @@ import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../authModule/models/user_modal.dart';
+import '../../homeModule/widgets/custom_dialog.dart';
 import '../../homeModule/widgets/profile_text_form_field.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -35,22 +37,154 @@ class _ProfileScreenState extends State<ProfileScreen> {
   double dW = 0;
   double tS = 0;
   final ImagePicker _picker = ImagePicker();
-
-  var _image;
+  late ImageSource source;
+  File? _image;
 
   pickImage() async {
+    await showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Wrap(children: [
+            Row(
+              children: [
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      source = ImageSource.camera;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: SizedBox(
+                    height: dW * 0.2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.camera, size: dW * 0.1),
+                        const Spacer(),
+                        const Text('Camera'),
+                        const Spacer(),
+                        const Spacer(),
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      source = ImageSource.gallery;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: SizedBox(
+                    height: dW * 0.2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.browse_gallery, size: dW * 0.1),
+                        const Spacer(),
+                        const Text('Gallery'),
+                        const Spacer(),
+                        const Spacer()
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                const Spacer(),
+                const Spacer(),
+                const Spacer(),
+                const Spacer(),
+              ],
+            ),
+          ]);
+        });
+
     final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: dW * 0.35,
-      maxHeight: dW * 0.27,
+      source: source,
+      maxWidth: dW * 0.5,
+      maxHeight: dW * 0.5,
       imageQuality: 100,
     );
 
+    // ! ignore: use_build_context_synchronously
+
     if (image != null) {
-      setState(() {
-        _image = File(image.path);
-      });
+      _image = File(image.path);
+      String objectName = fileName(_image!);
+      String objectType = fileType(_image!);
+      if (objectType != "png" && objectType != "jpg" && objectType != "jpeg") {
+        _image = null;
+        return;
+      }
+      print('uploading');
+      auth.uploadToS3Bucket(
+          image: _image!, objectName: objectName, objectType: objectType);
+      setState(() {});
+      const SnackBar(content: Text('Image Upload Succesful'));
+    } else {
+      return const SnackBar(content: Text('Image Upload Failed'));
     }
+  }
+
+  onAddPhotoClicked(context) async {
+    Permission permission;
+
+    if (Platform.isIOS) {
+      permission = Permission.photos;
+    } else {
+      permission = Permission.storage;
+    }
+    PermissionStatus permissionStatus = await permission.request();
+
+    print(permissionStatus);
+
+    if (permissionStatus == PermissionStatus.restricted) {
+      _showOpenAppSettingsDialog(context);
+      permissionStatus = await permission.status;
+      if (permissionStatus != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    if (permissionStatus == PermissionStatus.permanentlyDenied) {
+      _showOpenAppSettingsDialog(context);
+
+      permissionStatus = await permission.status;
+
+      if (permissionStatus != PermissionStatus.granted) {
+        //Only continue if permission granted
+        return;
+      }
+    }
+
+    if (permissionStatus == PermissionStatus.denied) {
+      if (Platform.isIOS) {
+        _showOpenAppSettingsDialog(context);
+      } else {
+        permissionStatus = await permission.request();
+      }
+
+      if (permissionStatus != PermissionStatus.granted) {
+        //Only continue if permission granted
+        return;
+      }
+    }
+
+    if (permissionStatus == PermissionStatus.granted) {
+      pickImage();
+    }
+  }
+
+  _showOpenAppSettingsDialog(context) {
+    return CustomDialog.show(
+      context,
+      'Permission needed',
+      'Photos permission is needed to select photos',
+      'Open settings',
+      openAppSettings,
+    );
   }
 
   void dateChanger(
@@ -154,12 +288,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 children: [
                   SizedBox(
-                    height: dW * 0.27,
-                    width: dW * 0.27,
                     child: FadeInImage(
+                      height: dW * 0.27,
                       width: dW * 0.27,
                       image: NetworkImage(
-                        profilePic,
+                        user.avatar,
                       ),
                       placeholder: AssetImage(
                         user.gender == 'Male'
@@ -178,14 +311,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: dW * 0.27,
                           child: _image != null
                               ? Image.file(
-                                  _image,
+                                  _image!,
                                   fit: BoxFit.cover,
                                 )
                               : Image.asset(
-                            user.gender == 'Male'
-                                ? 'assets/images/menProfile.jpg'
-                                : 'assets/images/womenProfile2.png',
-                          ),
+                                  user.gender == 'Male'
+                                      ? 'assets/images/menProfile.jpg'
+                                      : 'assets/images/womenProfile2.png',
+                                ),
                         );
                       },
                       fit: BoxFit.scaleDown,
@@ -350,7 +483,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
 //         const Spacer(),
 //       ]),
 //     );
-
-
-
-

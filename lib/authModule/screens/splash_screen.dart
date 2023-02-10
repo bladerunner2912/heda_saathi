@@ -1,16 +1,15 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
 import 'package:heda_saathi/authModule/providers/family_provider.dart';
 import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
 import 'package:heda_saathi/featuresModule/providers/search_provider.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../../main.dart';
 import '../providers/auth_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -22,6 +21,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+
+
+
+
   pushPhoneNumberScreen() {
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: ((context) => PhoneNumberLoginScreen())));
@@ -43,6 +47,13 @@ class _SplashScreenState extends State<SplashScreen> {
         .fetchBirthdaysAndAnniversary();
   }
 
+  loadAdvertisments() {
+    Provider.of<AdvertismentProvider>(context, listen: false)
+        .fetchAdvertisment();
+  }
+
+  
+
   @override
   void initState() {
     // TODO: implement initState
@@ -51,7 +62,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   myInit() async {
-    await Future.delayed(const Duration(seconds: 2));
     await storage.ready;
     final accessTokenString = storage.getItem('accessToken');
 
@@ -61,6 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     var accessToken = json.decode(accessTokenString);
+    loadAdvertisments();
 
     if (accessToken == null) {
       pushPhoneNumberScreen();

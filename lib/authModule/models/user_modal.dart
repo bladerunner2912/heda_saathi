@@ -4,7 +4,7 @@ class User {
   final String id;
   final String name;
   final String phone;
-  final String avatar;
+   String avatar;
   final String email;
   final String gender;
   final DateTime dob;

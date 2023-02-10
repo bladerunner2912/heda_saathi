@@ -29,16 +29,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           height: dH * 0.7,
           color: Colors.white,
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: dW * 0.04),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Column(children: [
-                DummyTile(dW: dW, tS: tS),
+                DummyTile(dW: dW, tS: tS, opened: true),
+                DummyTile(dW: dW, tS: tS, opened: true),
+                DummyTile(dW: dW, tS: tS, opened: true),
                 DummyTile(dW: dW, tS: tS),
                 DummyTile(dW: dW, tS: tS),
                 DummyTile(dW: dW, tS: tS),
                 DummyTile(dW: dW, tS: tS),
                 DummyTile(dW: dW, tS: tS),
                 DummyTile(dW: dW, tS: tS),           
+                SizedBox(
+                  height: dW * 0.3,
+                ),
               ])
             ]),
           ),

@@ -1,24 +1,16 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/user_modal.dart';
 import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
-import 'package:heda_saathi/authModule/screens/splash_screen.dart';
-import 'package:heda_saathi/main.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
-
 import '../../api.dart';
-import '../models/family_model.dart';
 
 class AuthProvider with ChangeNotifier {
   final LocalStorage storage = LocalStorage('HedaSaathi');
-
   late User loadedUser;
+
 
   //loginUserAPI
   loginUser({String phone = '', String accessToken = ''}) async {
@@ -32,7 +24,7 @@ class AuthProvider with ChangeNotifier {
       final respone = await http.post(Uri.parse(url),
           body: str, headers: {"Content-Type": "application/json"});
       var responeData = jsonDecode(respone.body);
-       
+
       // dob.replaceAll(RegExp('r/'), '-');
       print(responeData);
       loadedUser = User(
@@ -71,6 +63,59 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  uploadToS3Bucket(
+      {required File image,
+      required String objectName,
+      required String objectType}) async {
+    var url = '${webApi['domain']}/uploadPicUrl';
+    var str = json.encode({
+      "userId": loadedUser.id,
+      "objectName": objectName,
+      "objectType": objectType
+    });
+    // var request = http.MultipartRequest('PUT', Uri.parse(url));
+    // request.files.add(http.MultipartFile(
+    //     'image', image.openRead(), image.lengthSync(),
+    //     filename: objectName));
+    // request.fields.addAll(str);
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    try {
+      var response =
+          await http.post(Uri.parse(url), headers: headers, body: str);
+      final responseData = json.decode(response.body);
+      var uploadResponse = await http.put(Uri.parse(responseData['uploadUrl']),
+          body: image.readAsBytesSync());
+
+      if (uploadResponse.statusCode == 200) {
+        print('here');
+        print(uploadResponse.headers);
+
+        String bucketName = 'heda-saathi-data';
+
+        String location = "https://$bucketName.s3.amazonaws.com/$objectName";
+        loadedUser.avatar = location;
+        print('here');
+        var url = "${webApi['domain']}/users/update/:${loadedUser.id}";
+        var str = ({"avatar": location});
+        var response = await http.post(
+          Uri.parse(url),
+          body: str,
+        );
+        if (response.statusCode == 200) {
+          print("Check Image babes");
+          notifyListeners();
+        }
+      } else {
+        print('error');
+        // Handle error
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   logout(context) async {
     await storage.ready;
     storage.deleteItem('accessToken');
@@ -80,109 +125,124 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
+  sendOtp({required String phoneNumber}) async {
+    var str = ({
+      "phone": phoneNumber,
+    });
+
+    var response = await http
+        .post(Uri.parse("${webApi['domain']}/users/sendOtp/"), body: str);
+
+    var responseBody = json.decode(response.body);
+    // print(responseBody);
+    return responseBody['otp'].toString();
+  }
+
+ 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  List<User> users = [
-    User(
-        address: 'Bhusawal',
-        city: 'Bhusawal',
-        dob: DateTime.now(),
-        email: 'kapgatepranav@gmail.com',
-        familyId: '1',
-        id: '1',
-        anniv: DateTime.now(),
-        phone: '9422762455',
-        pincode: '425201',
-        profession: 'Trader',
-        name: 'Yash Heda',
-        state: 'Maharashtra',
-        married: false,
-        avatar:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC8KYj8Qss8L7Lx9LxadvSu9nNfHdfqLsuJQ&usqp=CAU',
-        gender: 'Male'),
-    User(
-        address: 'Bhusawal',
-        city: 'Bhusawal',
-        dob: DateTime.now(),
-        email: 'kapgatepranav@gmail.com',
-        familyId: '1',
-        id: '2',
-        anniv: DateTime.now(),
-        phone: '9422762455',
-        pincode: '425201',
-        profession: 'Trader',
-        name: 'Raju Heda',
-        state: 'Maharashtra',
-        married: true,
-        avatar:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU',
-        gender: 'Male'),
-    User(
-        address: 'Bhusawal',
-        city: 'Bhusawal',
-        dob: DateTime.now(),
-        email: 'kapgatepranav@gmail.com',
-        familyId: '1',
-        id: '3',
-        anniv: DateTime.now(),
-        phone: '9422762455',
-        pincode: '425201',
-        profession: 'Trader',
-        name: 'Mata Heda',
-        state: 'Maharashtra',
-        married: true,
-        avatar:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU',
-        gender: 'Female'),
-    User(
-        address: 'Bhusawal',
-        city: 'Bhusawal',
-        dob: DateTime.now(),
-        email: 'kapgatepranav@gmail.com',
-        familyId: '1',
-        id: '4',
-        anniv: DateTime.now(),
-        phone: '9422762455',
-        pincode: '425201',
-        profession: 'Trader',
-        name: 'Smita Heda',
-        state: 'Maharashtra',
-        married: false,
-        avatar:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU',
-        gender: 'Female')
-  ];
+  // List<User> users = [
+  //   User(
+  //       address: 'Bhusawal',
+  //       city: 'Bhusawal',
+  //       dob: DateTime.now(),
+  //       email: 'kapgatepranav@gmail.com',
+  //       familyId: '1',
+  //       id: '1',
+  //       anniv: DateTime.now(),
+  //       phone: '9422762455',
+  //       pincode: '425201',
+  //       profession: 'Trader',
+  //       name: 'Yash Heda',
+  //       state: 'Maharashtra',
+  //       married: false,
+  //       avatar:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC8KYj8Qss8L7Lx9LxadvSu9nNfHdfqLsuJQ&usqp=CAU',
+  //       gender: 'Male'),
+  //   User(
+  //       address: 'Bhusawal',
+  //       city: 'Bhusawal',
+  //       dob: DateTime.now(),
+  //       email: 'kapgatepranav@gmail.com',
+  //       familyId: '1',
+  //       id: '2',
+  //       anniv: DateTime.now(),
+  //       phone: '9422762455',
+  //       pincode: '425201',
+  //       profession: 'Trader',
+  //       name: 'Raju Heda',
+  //       state: 'Maharashtra',
+  //       married: true,
+  //       avatar:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU',
+  //       gender: 'Male'),
+  //   User(
+  //       address: 'Bhusawal',
+  //       city: 'Bhusawal',
+  //       dob: DateTime.now(),
+  //       email: 'kapgatepranav@gmail.com',
+  //       familyId: '1',
+  //       id: '3',
+  //       anniv: DateTime.now(),
+  //       phone: '9422762455',
+  //       pincode: '425201',
+  //       profession: 'Trader',
+  //       name: 'Mata Heda',
+  //       state: 'Maharashtra',
+  //       married: true,
+  //       avatar:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU',
+  //       gender: 'Female'),
+  //   User(
+  //       address: 'Bhusawal',
+  //       city: 'Bhusawal',
+  //       dob: DateTime.now(),
+  //       email: 'kapgatepranav@gmail.com',
+  //       familyId: '1',
+  //       id: '4',
+  //       anniv: DateTime.now(),
+  //       phone: '9422762455',
+  //       pincode: '425201',
+  //       profession: 'Trader',
+  //       name: 'Smita Heda',
+  //       state: 'Maharashtra',
+  //       married: false,
+  //       avatar:
+  //           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU',
+  //       gender: 'Female')
+  // ];
 
   /*IMP!*/
-  static const List<List<String>> _relations = [
-    ['SELF', 'SELF'],
-    ['HUSBAND', 'WIFE'],
-    ['FATHER', 'SON'],
-    ['FATHER', 'DAUGHTER'],
-    ['MOTHER', 'SON'],
-    ['MOTHER', 'DAUGHTER'],
-    ['BROTHER', 'SISTER'],
-    ['BROTHER', 'BROTHER'],
-    ['UNCLE', 'NIECE'],
-    ['AUNT', 'NIECE'],
-    ['COUSIN', 'COUSIN'],
-    ['GRANDFATHER', 'GRANDSON'],
-    ['GRANDMOTHER', 'GRANDSON'],
-    ['GRANDFATHER', 'GRANDDAUGHTER'],
-    ['GRANDMOTHER', 'GRANDDAUGHTER'],
-    ['FATHER IN LAW', 'SON-IN-LAW'],
-    ['FATHER IN LAW', 'DAUGHTER-IN-LAW']
-  ];
+  // static const List<List<String>> _relations = [
+  //   ['SELF', 'SELF'],
+  //   ['HUSBAND', 'WIFE'],
+  //   ['FATHER', 'SON'],
+  //   ['FATHER', 'DAUGHTER'],
+  //   ['MOTHER', 'SON'],
+  //   ['MOTHER', 'DAUGHTER'],
+  //   ['BROTHER', 'SISTER'],
+  //   ['BROTHER', 'BROTHER'],
+  //   ['UNCLE', 'NIECE'],
+  //   ['AUNT', 'NIECE'],
+  //   ['COUSIN', 'COUSIN'],
+  //   ['GRANDFATHER', 'GRANDSON'],
+  //   ['GRANDMOTHER', 'GRANDSON'],
+  //   ['GRANDFATHER', 'GRANDDAUGHTER'],
+  //   ['GRANDMOTHER', 'GRANDDAUGHTER'],
+  //   ['FATHER IN LAW', 'SON-IN-LAW'],
+  //   ['FATHER IN LAW', 'DAUGHTER-IN-LAW']
+  // ];
 
-  static const List<String> _advertisments = [
-    'https://di-uploads-pod7.dealerinspire.com/mercedesbenzofmyrtlebeach/uploads/2022/03/Banner-1800x760.jpg',
-    'https://img.freepik.com/premium-psd/digital-marketing-web-banner-design-template_268949-90.jpg?w=2000',
-    'https://img.freepik.com/free-psd/digital-marketing-live-webinar-corporate-facebook-cover-template_120329-3023.jpg?w=2000',
-    'https://www.audi.com/content/dam/ci/Guides/Communication_Media/Online_Banner/02_Anwendungsbeispiele/audi-ci-communication-media-online-banners-example1.png?imwidth=2400',
-    'https://img.freepik.com/premium-vector/solar-energy-online-banner-template-set-renewable-energy-production-advertisement-horizontal-ad_607579-243.jpg?w=2000'
-  ];
+  // static const List<String> _advertisments = [
+  //   'https://di-uploads-pod7.dealerinspire.com/mercedesbenzofmyrtlebeach/uploads/2022/03/Banner-1800x760.jpg',
+  //   'https://img.freepik.com/premium-psd/digital-marketing-web-banner-design-template_268949-90.jpg?w=2000',
+  //   'https://img.freepik.com/free-psd/digital-marketing-live-webinar-corporate-facebook-cover-template_120329-3023.jpg?w=2000',
+  //   'https://www.audi.com/content/dam/ci/Guides/Communication_Media/Online_Banner/02_Anwendungsbeispiele/audi-ci-communication-media-online-banners-example1.png?imwidth=2400',
+  //   'https://img.freepik.com/premium-vector/solar-energy-online-banner-template-set-renewable-energy-production-advertisement-horizontal-ad_607579-243.jpg?w=2000'
+  // ];
 
-  get advertisments => _advertisments;
+  // get advertisments => _advertisments;
 
   toggleProfileEdit() {
     loadedUser.editRequest = true;

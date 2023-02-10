@@ -19,7 +19,7 @@ class FamiliesProvider with ChangeNotifier {
 
   loadFamilyandRelations(String familyId, String userId) async {
     familyMembers.clear();
-    _family = Family(id: '1', memberIds: [], metaData: [[]]);
+    _family = Family(id: '', memberIds: [], metaData: [[]]);
 
     await fetchFamily(familyId: familyId);
 
@@ -41,22 +41,19 @@ class FamiliesProvider with ChangeNotifier {
       );
 
       var responseBody = json.decode(response.body);
-      print(responseBody);
-
       List<String> membersIdsString = [];
       for (int i = 0; i < responseBody["family"]["memberIds"].length; i++) {
         var id = responseBody["family"]["memberIds"][i].toString();
         print(id);
         membersIdsString.add(id);
       }
-
       _family = Family(
         id: responseBody['family']["_id"],
         memberIds: membersIdsString,
         metaData: responseBody['family']['metaData'],
       );
     } catch (error) {
-      print(error);
+      _family = Family(id: '', memberIds: [], metaData: [[]]);
     }
   }
 

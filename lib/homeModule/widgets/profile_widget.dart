@@ -1,26 +1,19 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/authModule/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({
     Key? key,
     required this.dW,
-    required this.profilePic,
-    required this.name,
     required this.tS,
-    required this.city,
-    required this.mobileNo,
-    required this.gender,
   }) : super(key: key);
 
   final double dW;
-  final String profilePic;
-  final String name;
   final double tS;
-  final String city;
-  final String mobileNo;
-  final String gender;
+  
 
   @override
   State<ProfileWidget> createState() => _ProfileWidgetState();
@@ -29,11 +22,13 @@ class ProfileWidget extends StatefulWidget {
 class _ProfileWidgetState extends State<ProfileWidget> {
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AuthProvider>(context).loadedUser;
     return Container(
       // color: Colors.teal.shade50,
       color: Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.4),
       margin: EdgeInsets.only(top: widget.dW * 0.01),
-      padding: EdgeInsets.symmetric(horizontal: widget.dW * 0.05, vertical: widget.dW * 0.03),
+      padding: EdgeInsets.symmetric(
+          horizontal: widget.dW * 0.05, vertical: widget.dW * 0.03),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -41,20 +36,27 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             height: widget.dW * 0.27,
             width: widget.dW * 0.27,
             child: FadeInImage(
+              height: widget.dW * 0.2,
               width: widget.dW * 0.2,
-              image: NetworkImage(widget.profilePic),
-              placeholder: AssetImage(widget.gender == 'Male'
+              image: Image.network(
+                user.avatar,
+                fit: BoxFit.cover,
+              ).image,
+              placeholder: AssetImage(user.gender == 'Male'
                   ? 'assets/images/menProfile.jpg'
                   : 'assets/images/womenProfile.png'),
               imageErrorBuilder: (context, error, stackTrace) {
                 return Container(
-                   color: Colors.white,
-                  padding : widget.gender == 'Male'? const EdgeInsets.all(0) : EdgeInsets.symmetric(horizontal:widget.dW * 0.0265,),
+                  color: Colors.white,
+                  padding: user.gender == 'Male'
+                      ? const EdgeInsets.all(0)
+                      : EdgeInsets.symmetric(
+                          horizontal: widget.dW * 0.0265,
+                        ),
                   width: widget.dW * 0.27,
                   height: widget.dW * 0.27,
                   child: Image.asset(
-                    
-                    widget.gender == 'Male'
+                    user.gender == 'Male'
                         ? 'assets/images/menProfile.jpg'
                         : 'assets/images/womenProfile.png',
                   ),
@@ -72,21 +74,21 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.name,
-                  style:
-                      TextStyle(fontSize: 24 * widget.tS, fontWeight: FontWeight.w600),
+                  user.name,
+                  style: TextStyle(
+                      fontSize: 24 * widget.tS, fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
                 Text(
-                  widget.city,
-                  style:
-                      TextStyle(fontSize: 16 * widget.tS, fontWeight: FontWeight.w500),
+                  user.city,
+                  style: TextStyle(
+                      fontSize: 16 * widget.tS, fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
                 Text(
-                  widget.mobileNo,
-                  style:
-                      TextStyle(fontSize: 16 * widget.tS, fontWeight: FontWeight.w500),
+                  user.phone,
+                  style: TextStyle(
+                      fontSize: 16 * widget.tS, fontWeight: FontWeight.w500),
                 )
               ],
             ),

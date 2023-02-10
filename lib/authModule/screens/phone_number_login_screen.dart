@@ -8,6 +8,7 @@ import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../../featuresModule/providers/search_provider.dart';
 import '../providers/family_provider.dart';
 
 // import 'package:flutter/src/widgets/container.dart';
@@ -26,11 +27,14 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
   bool errorFlag = false;
   late AuthProvider auth;
 
-  void initState() {
-    // TODO: implement initState
-    auth = Provider.of<AuthProvider>(context, listen: false);
+  loadFamily(familyId, id) {
+    Provider.of<FamiliesProvider>(context, listen: false)
+        .loadFamilyandRelations(familyId, id);
+  }
 
-    super.initState();
+  loadEvents() {
+    Provider.of<SearchProvider>(context, listen: false)
+        .fetchBirthdaysAndAnniversary();
   }
 
   toggleErrorFlag() {
@@ -47,19 +51,33 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
     if (!errorFlag) {
       final user = await Provider.of<AuthProvider>(context, listen: false)
           .loginUser(phone: phoneNumberController.text);
-  
-      if (user!=null) {
-      await  Provider.of<FamiliesProvider>(context, listen: false)
-            .loadFamilyandRelations(user.familyId, user.id);
-      Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) =>  HomeScreenWidget()));
+
+      if (user != null) {
+        loadFamily(
+          user.familyId,
+          user.id,
+        );
+        loadEvents();
+        String otp = auth.sendOtp(phoneNumber: phoneNumberController.text);
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OtpScreen(
+                      otp: otp,
+                      number: phoneNumberController.text,
+                    )));
       } else {
         errorFlag = !errorFlag;
-        setState(() {  
-        });
-
+        setState(() {});
       }
     }
+  }
+
+  void initState() {
+    // TODO: implement initState
+    auth = Provider.of<AuthProvider>(context, listen: false);
+    super.initState();
   }
 
   @override

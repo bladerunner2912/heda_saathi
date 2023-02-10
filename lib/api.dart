@@ -1,16 +1,17 @@
 var webApi = {
-  'domain': 'https://baf5-182-48-216-131.in.ngrok.io'
+  'domain': 'https://heda-saathi.onrender.com'
+  // 'domain': 'https://30bb-182-48-218-84.in.ngrok.io'
 }; // DEV bladerunner
 
 var endPoints = {
   
-  //Auth Module
+  //Auth Modulek
   'loginUser': 'users/loginUser',
   'searchMembers' : 'users/searchMembers',
   'fetchMembers' : 'users/fetchMembers',
   
   //User Module
-
+  
   //Feature Module
 
   //Notification Module

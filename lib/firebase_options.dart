@@ -17,15 +17,24 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,41 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDPpr23A-dNVhnXOLf2tQXki1A54rhnqFA',
-    appId: '1:338990588790:web:683cb09f9504847a985057',
-    messagingSenderId: '338990588790',
-    projectId: 'hedasaathi-723d0',
-    authDomain: 'hedasaathi-723d0.firebaseapp.com',
-    storageBucket: 'hedasaathi-723d0.appspot.com',
-    measurementId: 'G-Z26BPPYRSB',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAalGTIerGZcbhcUsrfSDjLP9tpCQ6vxNo',
-    appId: '1:338990588790:android:933b4aad237fe6a2985057',
-    messagingSenderId: '338990588790',
-    projectId: 'hedasaathi-723d0',
-    storageBucket: 'hedasaathi-723d0.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD3fpybvrDZJFlqArMsCRMsbQiauF7MSL8',
-    appId: '1:338990588790:ios:bf7e479a0d100367985057',
-    messagingSenderId: '338990588790',
-    projectId: 'hedasaathi-723d0',
-    storageBucket: 'hedasaathi-723d0.appspot.com',
-    iosClientId: '338990588790-flvhmvnqkq6t8719a7nqhcnna5m45657.apps.googleusercontent.com',
-    iosBundleId: 'com.example.hedaSaathi',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD3fpybvrDZJFlqArMsCRMsbQiauF7MSL8',
-    appId: '1:338990588790:ios:bf7e479a0d100367985057',
-    messagingSenderId: '338990588790',
-    projectId: 'hedasaathi-723d0',
-    storageBucket: 'hedasaathi-723d0.appspot.com',
-    iosClientId: '338990588790-flvhmvnqkq6t8719a7nqhcnna5m45657.apps.googleusercontent.com',
-    iosBundleId: 'com.example.hedaSaathi',
+    apiKey: 'AIzaSyD5UHlJBUPNLMDu-pdkdaPIJRwYKEa3jGA',
+    appId: '1:453487598991:android:fe45c9a5efc9001d6d3ffa',
+    messagingSenderId: '453487598991',
+    projectId: 'hedaji-2b9e8',
+    storageBucket: 'hedaji-2b9e8.appspot.com',
   );
 }

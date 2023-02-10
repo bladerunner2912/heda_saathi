@@ -1,6 +1,13 @@
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/authModule/models/advertisment_model.dart';
+import 'package:heda_saathi/common_functions.dart';
+import 'package:heda_saathi/homeModule/screens/add_saathi_screen.dart';
 import 'package:heda_saathi/homeModule/screens/saathi_profile_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../authModule/models/user_modal.dart';
 import '../../authModule/providers/auth_provider.dart';
@@ -14,21 +21,22 @@ class HomePage extends StatelessWidget {
     Key? key,
     required this.dW,
     required this.dH,
-    required this.user,
     required this.tS,
     required this.auth,
     required this.familyMembers,
+    required this.advertisments,
   }) : super(key: key);
 
   final double dW;
   final double dH;
-  final User user;
   final double tS;
   final List<Saathi> familyMembers;
   final AuthProvider auth;
+  final List<Advertisment> advertisments;
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AuthProvider>(context).loadedUser;
     return Container(
       color: Colors.white,
       width: dW,
@@ -51,12 +59,7 @@ class HomePage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const ProfileScreen())),
           child: ProfileWidget(
             dW: dW,
-            profilePic: user.avatar,
-            name: user.name,
             tS: tS,
-            city: user.city,
-            mobileNo: user.phone,
-            gender: user.gender,
           ),
         ),
         Padding(
@@ -71,9 +74,10 @@ class HomePage extends StatelessWidget {
           ),
         ),
         Container(
-          color: Colors.teal.shade50.withOpacity(0.3),
+          // color: Colors.teal.shade50.withOpacity(0.3),
           width: dW,
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             child: Row(children: [
               ...List.generate(
@@ -83,11 +87,9 @@ class HomePage extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      SaathiProfileScreen(
-                                        memeberId: familyMembers[index]
-                                            .userId,
-                                            isFamilyMember: true,
+                                  builder: (context) => SaathiProfileScreen(
+                                        memeberId: familyMembers[index].userId,
+                                        isFamilyMember: true,
                                       )));
                         },
                         child: FamilyWidget(
@@ -95,12 +97,47 @@ class HomePage extends StatelessWidget {
                           tS: tS,
                           saathi: familyMembers[index],
                           first: index == 0 ? true : false,
-                          last: index ==
-                                  (familyMembers.length - 1)
+                          last: index == (familyMembers.length - 1)
                               ? true
                               : false,
                         ),
-                      ))
+                      )),
+              GestureDetector(
+                onTap: () {
+                  navigator(context, const AddSaathiScreen());
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    color: Color((Random().nextDouble() * 0xFFFFFF).toInt())
+                        .withOpacity(0.2),
+                  ),
+                  margin: EdgeInsets.only(
+                      left: familyMembers.isEmpty ? dW * 0.035 : dW * 0.02,
+                      right: dW * (0.37)),
+                  padding: EdgeInsets.only(
+                      bottom: dW * 0.005,
+                      left: dW * 0.06,
+                      right: dW * 0.06,
+                      top: dW * 0.04),
+                  width: dW * 0.42,
+                  height: dW * 0.5,
+                  child: Center(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                        Icon(Icons.add_sharp),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          'Add your Family  Members',
+                          textAlign: TextAlign.center,
+                        )
+                      ])),
+                ),
+              ),
             ]),
           ),
         ),
@@ -117,16 +154,44 @@ class HomePage extends StatelessWidget {
         ),
         CarouselSlider(
             items: List.generate(
-                auth.advertisments.length,
-                (index) => Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: Image.network(auth.advertisments[index])
-                                  .image,
-                              fit: BoxFit.fill,
-                              filterQuality: FilterQuality.high)),
-                      margin: EdgeInsets.symmetric(
-                        vertical: dW * 0.01,
+                advertisments.length,
+                (index) => GestureDetector(
+                      onTap: () async {
+                        String url = advertisments[index].websiteUrl;
+                        var urllaunchable = await canLaunchUrl(
+                          Uri.parse(url),
+                        ); //canLaunch is from url_launcher package
+                        if (urllaunchable) {
+                          await launchUrl(
+                              Uri.parse(
+                                url,
+                              ),
+                              mode: LaunchMode
+                                  .externalApplication); //launch is from url_launcher package to launch URL
+                        } else {
+                          showDialogBox(
+                              context: context,
+                              dialogmessage:
+                                  'Cant open the website due to some issues',
+                              buttonOne: 'Ok',
+                              buttonOneFunction: () {
+                                Navigator.pop(context);
+                              },
+                              dW: dW,
+                              tS: tS);
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: Image.network(
+                                        advertisments[index].posterUrl)
+                                    .image,
+                                fit: BoxFit.fill,
+                                filterQuality: FilterQuality.high)),
+                        margin: EdgeInsets.symmetric(
+                          vertical: dW * 0.01,
+                        ),
                       ),
                     )),
             options: CarouselOptions(

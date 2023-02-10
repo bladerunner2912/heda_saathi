@@ -1,19 +1,17 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
-import 'package:heda_saathi/authModule/providers/family_provider.dart';
 import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
 import 'package:heda_saathi/common_functions.dart';
-import 'package:heda_saathi/featuresModule/screens/anniversary_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/birthday_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/help_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/profile_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/search_screen.dart';
+import 'package:heda_saathi/homeModule/screens/add_saathi_screen.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class CustomDrawer extends StatelessWidget {
   final double dW;
@@ -91,9 +89,13 @@ class CustomDrawer extends StatelessWidget {
             padding: EdgeInsets.only(left: dW * 0.04, top: dW * 0.04),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              drawerTile('ABHMS INFORMATION', '', context),
-              drawerTile('OUR WEBSITE', '', context),
-              drawerTile('ABHMS NOTIFICATIONS', HomeScreenWidget(), context)
+              drawerTile(
+                  'ABHMS INFORMATION', 'https://www.techredo.in', context,
+                  isWebPage: true),
+              drawerTile('OUR WEBSITE', "https://www.techredo.in", context,
+                  isWebPage: true),
+              drawerTile('ABHMS NOTIFICATIONS',
+                  HomeScreenWidget(currentIndex: 2), context)
             ]),
           ),
           const Spacer(),
@@ -102,9 +104,12 @@ class CustomDrawer extends StatelessWidget {
             padding: EdgeInsets.only(left: dW * 0.04, top: dW * 0.04),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              drawerTile('MAHASABHA SCHEMES', '', context),
-              drawerTile('SAATHI REGISTERATION', '', context),
-              drawerTile('CONTACT US', 'onPressed', context)
+              drawerTile(
+                  'MAHASABHA SCHEMES', 'https://www.techredo.in', context),
+              drawerTile('SAATHI REGISTERATION', AddSaathiScreen(), context),
+              drawerTile(
+                  'CONTACT US', 'https://www.techredo.in/Contact_Us/', context,
+                  isWebPage: true)
             ]),
           ),
           const Divider(
@@ -112,15 +117,35 @@ class CustomDrawer extends StatelessWidget {
             thickness: 0.24,
           ),
           GestureDetector(
-            onTap: () {
-              auth.logout(context);
-            },
+           
             child: Padding(
                 padding: EdgeInsets.only(
                     left: dW * 0.04, top: dW * 0.015, bottom: dW * 0.04),
-                child: drawerTile(
-                    'LOGOUT >>>', PhoneNumberLoginScreen(), context,
-                    isLogout: true)),
+                child: GestureDetector(
+                  // style: ButtonStyle(
+                  //     backgroundColor: MaterialStateProperty.resolveWith((states) {
+                  //   if (states.contains(MaterialState.pressed)) {
+                  //     return isLogout ? Colors.green : Colors.red;
+                  //   }
+                  //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
+                  // })),
+                  onTap: () {
+                    auth.logout(context);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: 12,
+                      top: 12,
+                    ),
+                    child: Container(
+                      width: 240,
+                      child: Text(
+                        'LOGOUT',
+                        style: TextStyle(fontSize: 22, color: Colors.red),
+                      ),
+                    ),
+                  ),
+                )),
           )
         ],
       )),
@@ -128,7 +153,8 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
-drawerTile(name, onPressed, context, {bool isLogout = false}) =>
+drawerTile(name, onPressed, context,
+        {bool isLogout = false, bool isWebPage = false}) =>
     GestureDetector(
       // style: ButtonStyle(
       //     backgroundColor: MaterialStateProperty.resolveWith((states) {
@@ -137,7 +163,19 @@ drawerTile(name, onPressed, context, {bool isLogout = false}) =>
       //   }
       //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
       // })),
-      onTap: () => navigator(context, onPressed),
+      onTap: isWebPage
+          ? () async {
+              String url = onPressed;
+              var urllaunchable = await canLaunchUrl(
+                  Uri.parse(url)); //canLaunch is from url_launcher package
+              if (urllaunchable) {
+                await launchUrl(Uri.parse(
+                    url)); //launch is from url_launcher package to launch URL
+              } else {
+                print("URL can't be launched.");
+              }
+            }
+          : () => navigator(context, onPressed),
       child: Padding(
         padding: EdgeInsets.only(
           bottom: 12,

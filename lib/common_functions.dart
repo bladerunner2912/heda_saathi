@@ -1,7 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import 'authModule/providers/advertisment_provider.dart';
+import 'authModule/providers/family_provider.dart';
+import 'authModule/screens/phone_number_login_screen.dart';
+import 'featuresModule/providers/search_provider.dart';
 import 'homeModule/models/saathi_model.dart';
+import 'homeModule/screens/home_screen.dart';
 
 navigator(BuildContext context, Widget route) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -127,22 +135,41 @@ showDialogBox({
     barrierLabel: "Barrier",
     barrierDismissible: true,
     barrierColor: Colors.black.withOpacity(0.5),
-    // transitionDuration: const Duration(milliseconds: 300),
-    // transitionBuilder: (_, anim, __, child) {
-    //   Tween<Offset> tween;
-    //   if (anim.status == AnimationStatus.reverse) {
-    //     tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
-    //   } else {
-    //     tween = Tween(begin: Offset(1, 0), end: Offset.zero);
-    //   }
-
-    //   return SlideTransition(
-    //     position: tween.animate(anim),
-    //     child: FadeTransition(
-    //       opacity: anim,
-    //       child: child,
-    //     ),
-    //   );
-    // },
+   
   );
+}
+
+pushPhoneNumberScreen(context,) {
+  Navigator.pushReplacement(context,
+      MaterialPageRoute(builder: ((context) => PhoneNumberLoginScreen())));
+}
+
+pushHomeScreen(context) {
+  Navigator.of(context).pushReplacement<void, void>(MaterialPageRoute<void>(
+    builder: (BuildContext context) => HomeScreenWidget(),
+  ));
+}
+
+loadFamily(familyId, id,context) {
+  Provider.of<FamiliesProvider>(context, listen: false)
+      .loadFamilyandRelations(familyId, id);
+}
+
+loadEvents(context) {
+  Provider.of<SearchProvider>(context, listen: false)
+      .fetchBirthdaysAndAnniversary();
+}
+
+loadAdvertisments(context) {
+  Provider.of<AdvertismentProvider>(context, listen: false).fetchAdvertisment();
+}
+
+
+
+String fileName(File file) {
+  return file.path.split("/").last;
+}
+
+String fileType(File file) {
+  return file.path.split(".").last;
 }

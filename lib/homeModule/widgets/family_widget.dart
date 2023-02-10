@@ -38,14 +38,37 @@ class FamilyWidget extends StatelessWidget {
       height: dW * 0.5,
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         CircleAvatar(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.transparent,
           radius: dW * 0.12,
-          backgroundImage: saathi.avatar == ''
-              ? Image.asset(
-                  'assets/images/orangeGanesha.png',
-                  fit: BoxFit.cover,
-                ).image
-              : Image.network(saathi.avatar!).image,
+          child: FittedBox(
+            clipBehavior: Clip.hardEdge,
+            child: FadeInImage(
+              height: dW * 0.27,
+              width: dW * 0.27,
+              image: Image.network(saathi.avatar!).image,
+              placeholder: AssetImage(saathi.gender == 'Male'
+                  ? 'assets/images/menProfile.jpg'
+                  : 'assets/images/womenProfile.png'),
+              imageErrorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.white,
+                  padding: saathi.gender == 'Male'
+                      ? const EdgeInsets.all(0)
+                      : EdgeInsets.symmetric(
+                          horizontal: dW * 0.0265,
+                        ),
+                  width: dW * 0.27,
+                  height: dW * 0.27,
+                  child: Image.asset(
+                    saathi.gender == 'Male'
+                        ? 'assets/images/menProfile.jpg'
+                        : 'assets/images/womenProfile.png',
+                  ),
+                );
+              },
+              fit: BoxFit.fitWidth,
+            ),
+          ),
         ),
         const Spacer(),
         const Spacer(),
@@ -53,6 +76,8 @@ class FamilyWidget extends StatelessWidget {
           child: Text(
             saathi.name,
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
             style: TextStyle(
               fontSize: 18 * tS,
               fontWeight: FontWeight.w600,
