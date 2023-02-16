@@ -1,20 +1,13 @@
-
 class Family {
   final String id;
   final List<String> memberIds;
-
   final List<dynamic> metaData;
-
   Family({
     required this.id,
     required this.memberIds,
     required this.metaData,
   });
 }
-
-
-
-
 
 //sequence of the family in which the member is kept is important. Make the sequence age wise.Relations are mapped via matrix to keep unique relations reflexive in nature.  
 // Family(id: '1', memberCount: [

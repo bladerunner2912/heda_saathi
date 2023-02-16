@@ -1,5 +1,4 @@
 import 'dart:core';
-
 class User {
   final String id;
   final String name;

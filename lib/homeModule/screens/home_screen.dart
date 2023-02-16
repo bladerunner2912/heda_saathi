@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/family_model.dart';
 import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
@@ -24,7 +25,7 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
   late AuthProvider auth;
   late User user;
   late Family family;
-
+ 
 
   switchBottomNavBar(int value) {
     setState(() {
@@ -33,6 +34,25 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
   }
 
   myInit() async {
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   RemoteNotification? notification = message.notification;
+    //   AndroidNotification? android = message.notification?.android;
+    //   print(notification);
+    //   print(android);
+    //   if (notification != null && android != null) {
+    //     flutterLocalNotificationsPlugin.show(
+    //         notification.hashCode,
+    //         notification.title,
+    //         notification.body,
+    //         NotificationDetails(
+    //           android: AndroidNotificationDetails(
+    //             channel.id,
+    //             channel.name,
+    //             priority: Priority.high,
+    //           ),
+    //         ));
+    //   }
+    // });
     currentIndex = widget.currentIndex!;
     auth = Provider.of<AuthProvider>(context, listen: false);
     user = auth.loadedUser;

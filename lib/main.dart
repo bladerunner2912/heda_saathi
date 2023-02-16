@@ -18,8 +18,8 @@ awaitStorageReady() async {
 }
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'heda_saathi', // id
-  'HedaJi', // title
+  'hedaji-2b9e8', // id
+  'hedaji', // title
   importance: Importance.high,
 );
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -31,7 +31,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -43,15 +43,39 @@ Future<void> main() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  await firebaseMessaging.setForegroundNotificationPresentationOptions(
     alert: true,
     sound: true,
-
+    badge: true,
   );
 
+  onSelectNotification(dynamic payload) async {
+    print('clicked');
+  }
+
+  onDidRecieveLocalNotification(
+      int id, String? title, String? body, String? payload) {
+    print('received');
+  }
+
+  var initializationSettingsAndroid = const AndroidInitializationSettings(
+      '@mipmap/heda_saathi'); // <- default icon name is @mipmap/ic_launcher
+  var initializationSettingsIOS = DarwinInitializationSettings(
+      onDidReceiveLocalNotification: onDidRecieveLocalNotification);
+
+  var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+
+  flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse: onSelectNotification);
+
+
+  // !  If message comes what should happen. NotificationDetails is widget responsible for the hovering thing.
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
+    print(notification);
+    print(android);
     if (notification != null && android != null) {
       flutterLocalNotificationsPlugin.show(
           notification.hashCode,
@@ -66,6 +90,7 @@ Future<void> main() async {
           ));
     }
   });
+
   // await Firebase.initializeApp();
   // final fcmToken = await FirebaseMessaging.instance.getToken();
   // print(fcmToken);

@@ -287,13 +287,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: dW,
               child: Row(
                 children: [
-                  SizedBox(
+                  Container(
+                    color: Colors.black,
                     child: FadeInImage(
                       height: dW * 0.27,
                       width: dW * 0.27,
-                      image: NetworkImage(
+                      image: Image.network(
                         user.avatar,
-                      ),
+                        fit: BoxFit.cover,
+                      ).image,
                       placeholder: AssetImage(
                         user.gender == 'Male'
                             ? 'assets/images/menProfile.jpg'
@@ -303,7 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         return Container(
                           color: Colors.white,
                           padding: user.gender == 'Male'
-                              ? EdgeInsets.all(0)
+                              ? const EdgeInsets.all(0)
                               : EdgeInsets.symmetric(
                                   horizontal: dW * 0.0265,
                                 ),

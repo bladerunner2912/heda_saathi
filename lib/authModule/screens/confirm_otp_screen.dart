@@ -6,11 +6,14 @@ import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:otp_timer_button/otp_timer_button.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/family_provider.dart';
 
 class OtpScreen extends StatefulWidget {
   final String number;
-  final String otp;
-  OtpScreen({required this.number, super.key, required this.otp});
+  OtpScreen({
+    required this.number,
+    super.key,
+  });
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -21,12 +24,23 @@ class _OtpScreenState extends State<OtpScreen> {
   TextEditingController phoneNumberController = TextEditingController();
   OtpTimerButtonController controller = OtpTimerButtonController();
   bool errorFlag = false;
+  bool isLoading = false;
   @override
   void initState() {
     // TODO: implement initState
-    final auth = Provider.of<AuthProvider>(context, listen: false);
     phoneNumberController.text = widget.number;
     super.initState();
+  }
+
+  loadFamily(familyId, id) async {
+    await Provider.of<FamiliesProvider>(context, listen: false)
+        .loadFamilyandRelations(familyId, id);
+  }
+
+  loadUserAndFamily() async {
+    final user = await Provider.of<AuthProvider>(context, listen: false)
+        .loginUser(phone: phoneNumberController.text);
+    loadFamily(user.familyId, user.id);
   }
 
   @override
@@ -36,6 +50,7 @@ class _OtpScreenState extends State<OtpScreen> {
     final tS = MediaQuery.of(context).textScaleFactor;
     final auth = Provider.of<AuthProvider>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       appBar: customAppBar(dW),
       body: SizedBox(
@@ -102,23 +117,24 @@ class _OtpScreenState extends State<OtpScreen> {
             SizedBox(
               height: dW * 0.05,
             ),
-            Container(
-                width: dW * 0.6,
-                child: OtpTimerButton(
-                  height: dW * 0.12,
-                  backgroundColor: Colors.redAccent,
-                  radius: 22,
-                  controller: controller,
-                  onPressed: () {
-                    controller.startTimer();
-                    auth.sendOtp(phoneNumber: widget.number);
-                  },
-                  text: const Text(
-                    'RESEND OTP',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                  ),
-                  duration: 60,
-                )),
+            SizedBox(
+              width: dW * 0.6,
+              child: OtpTimerButton(
+                height: dW * 0.12,
+                backgroundColor: Colors.redAccent,
+                radius: 22,
+                controller: controller,
+                onPressed: () async {
+                  controller.startTimer();
+                  await auth.sendOtp(phoneNumber: widget.number);
+                },
+                text: const Text(
+                  'RESEND OTP',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                ),
+                duration: 60,
+              ),
+            ),
             SizedBox(
               height: dW * 0.1,
             ),
@@ -138,16 +154,20 @@ class _OtpScreenState extends State<OtpScreen> {
               textStyle:
                   TextStyle(fontSize: 20 * tS, fontWeight: FontWeight.w500),
             ),
+            SizedBox(
+              height: dW * 0.02,
+            ),
             Visibility(
                 visible: errorFlag,
-                child: const Text('Invalid OTP!.Please try again later',
+                child: const Text('Invalid OTP!.Please try with proper otp',
                     style: TextStyle(color: Colors.red))),
             SizedBox(
               height: dW * 0.1,
             ),
             CustomAuthButton(
-                onTap: () {
-                  if (widget.otp == otp) {
+                onTap: () async {
+                  if (auth.otp == otp) {
+                    await loadUserAndFamily();
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (_) => HomeScreenWidget()));
                     return;

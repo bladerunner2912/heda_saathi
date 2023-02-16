@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
@@ -9,7 +9,6 @@ import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import '../../main.dart';
 import '../providers/auth_provider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -23,9 +22,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
 
-
-
-
   pushPhoneNumberScreen() {
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: ((context) => PhoneNumberLoginScreen())));
@@ -37,18 +33,18 @@ class _SplashScreenState extends State<SplashScreen> {
     ));
   }
 
-  loadFamily(familyId, id) {
-    Provider.of<FamiliesProvider>(context, listen: false)
+  loadFamily(familyId, id) async {
+    await Provider.of<FamiliesProvider>(context, listen: false)
         .loadFamilyandRelations(familyId, id);
   }
 
-  loadEvents() {
-    Provider.of<SearchProvider>(context, listen: false)
+  loadEvents() async {
+    await Provider.of<SearchProvider>(context, listen: false)
         .fetchBirthdaysAndAnniversary();
   }
 
-  loadAdvertisments() {
-    Provider.of<AdvertismentProvider>(context, listen: false)
+  loadAdvertisments() async {
+    await Provider.of<AdvertismentProvider>(context, listen: false)
         .fetchAdvertisment();
   }
 
@@ -63,15 +59,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   myInit() async {
     await storage.ready;
+    loadAdvertisments();
     final accessTokenString = storage.getItem('accessToken');
-
     if (accessTokenString == null) {
       pushPhoneNumberScreen();
       return;
     }
-
     var accessToken = json.decode(accessTokenString);
-    loadAdvertisments();
 
     if (accessToken == null) {
       pushPhoneNumberScreen();
@@ -114,6 +108,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Spacer(),
             SizedBox(
+              height: dW * .2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -122,23 +117,27 @@ class _SplashScreenState extends State<SplashScreen> {
                   Text(
                     'Powered By : ',
                     style: TextStyle(
+                      decoration: TextDecoration.underline,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Container(
-                      height: dW * 0.1035,
-                      width: dW * 0.4,
-                      color: Colors.black,
+                      height: dW * 0.1,
+                      width: dW * 0.5,
+                      color: Colors.transparent,
                       child: Image.asset(
                         'assets/images/index2.jpeg',
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                       )),
                   Text(
                     'Made with ❤️ in India',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   SizedBox(
-                    width: dW * 0.04,
+                    width: dW * 0.06,
                   ),
                 ],
               ),
