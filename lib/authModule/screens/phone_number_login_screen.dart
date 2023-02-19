@@ -55,7 +55,7 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
   }
 
   sendOtp() async {
-    if (!errorFlag) {
+    if (!errorFlag && phoneNumberController.text.length == 10) {
       setState(() {
         isLoading = true;
       });
@@ -99,7 +99,7 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
       backgroundColor: Colors.white,
       appBar: customAppBar(dW),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SizedBox(
               height: dH,
               width: dW,

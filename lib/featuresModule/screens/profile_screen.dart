@@ -30,6 +30,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController email = TextEditingController();
   TextEditingController dob = TextEditingController();
   TextEditingController anniv = TextEditingController();
+  TextEditingController profession = TextEditingController();
+  TextEditingController city = TextEditingController();
+  TextEditingController state = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   late AuthProvider auth;
   String profilePic = '';
   late User user;
@@ -39,7 +43,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   late ImageSource source;
   File? _image;
+  bool editable = false;
 
+  List<TextEditingController> s = [];
   pickImage() async {
     await showModalBottomSheet(
         context: context,
@@ -118,13 +124,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _image = null;
         return;
       }
-      print('uploading');
+      // print('uploading');
       auth.uploadToS3Bucket(
           image: _image!, objectName: objectName, objectType: objectType);
       setState(() {});
-      const SnackBar(content: Text('Image Upload Succesful'));
+      ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
+          .showSnackBar(SnackBar(
+        content: const Text('Image Upload Succesful'),
+        backgroundColor: Colors.green.shade400,
+      ));
     } else {
-      return const SnackBar(content: Text('Image Upload Failed'));
+      ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
+          .showSnackBar(SnackBar(
+        content: const Text('Image Upload Failed'),
+        backgroundColor: Colors.red.shade400,
+      ));
     }
   }
 
@@ -195,42 +209,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
     selectedDate = await showDatePicker(
         context: context,
         initialDate: user.dob,
-        firstDate: DateTime(1930),
+        firstDate: DateTime(0),
         lastDate: DateTime.now()) as DateTime;
 
     if (selectedDate != user.dob) {
-      textController.text = DateFormat('MM/dd/yy').format(selectedDate);
+      textController.text = DateFormat('dd/MM/yy').format(selectedDate);
       edited = true;
       setState(() {});
     }
   }
 
-  sendRequest(
-    double dW,
-  ) {
-    showDialogBox(
-        context: context,
-        dialogmessage: 'Are you sure you want these changes in your profile.',
-        buttonOne: 'Yes',
-        buttonOneFunction: () {
+  // sendRequest(
+  //   double dW,
+  // ) {
+  //   showDialogBox(
+  //       context: context,
+  //       dialogmessage: 'Are you sure you want these changes in your profile.',
+  //       buttonOne: 'Yes',
+  //       buttonOneFunction: () {
+  //         Navigator.of(context).pop();
+  //         showDialogBox(
+  //             context: context,
+  //             dialogmessage: 'Your Request Has Been Accepted',
+  //             buttonOne: 'Ok',
+  //             buttonOneFunction: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             dW: dW,
+  //             tS: tS);
+  //       },
+  //       buttonTwo: 'No',
+  //       buttonTwoFunction: () {
+  //         myInit(user);
+  //         Navigator.of(context).pop();
+  //       },
+  //       dW: dW,
+  //       tS: tS);
+  // }
+
+  toggleEdit() {
+    if (editable == true &&
+        (name.text != user.name ||
+            email.text != user.email ||
+            profession.text != user.profession ||
+            dob.text != DateFormat('dd/MM/yy').format(user.dob) ||
+            city.text != user.city ||
+            state.text != user.state)) {
+      for (var ss in s) {
+        if (ss.text == '') {
           Navigator.of(context).pop();
-          showDialogBox(
-              context: context,
-              dialogmessage: 'Your Request Has Been Accepted',
-              buttonOne: 'Ok',
-              buttonOneFunction: () {
-                Navigator.of(context).pop();
-              },
-              dW: dW,
-              tS: tS);
-        },
-        buttonTwo: 'No',
-        buttonTwoFunction: () {
-          myInit(user);
-          Navigator.of(context).pop();
-        },
-        dW: dW,
-        tS: tS);
+          ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
+              .showSnackBar(const SnackBar(
+            content: Text("You cant update with empty information."),
+            backgroundColor: Colors.red,
+          ));
+          return;
+        }
+      }
+      showDialogBox(
+          context: context,
+          dialogmessage: 'Are you sure you want these changes in your profile.',
+          buttonOne: 'Yes',
+          buttonOneFunction: () async {
+            var result = await auth.editUser(
+                birth: DateFormat('dd/MM/yyyy').parse(dob.text),
+                city: city.text,
+                email: email.text,
+                name: name.text,
+                profession: profession.text,
+                state: state.text);
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
+                .showSnackBar(SnackBar(
+              content: Text(result
+                  ? 'Profile Updated Succesfully'
+                  : "Profile update failed. Please try again after some time."),
+              backgroundColor: result ? Colors.greenAccent : Colors.redAccent,
+            ));
+          },
+          buttonTwo: 'No',
+          buttonTwoFunction: () {
+            myInit(user);
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
+                .showSnackBar(const SnackBar(
+              content: Text("Profile update canceled"),
+              backgroundColor: Colors.yellowAccent,
+            ));
+          },
+          dW: dW,
+          tS: tS);
+    }
+
+    setState(() {
+      editable = !editable;
+    });
   }
 
   myInit(User user) {
@@ -243,6 +316,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
     }
     profilePic = user.avatar;
+    profession.text = user.profession;
+    city.text = user.city;
+    state.text = user.state;
+
+    s.add(
+      name,
+    );
+    s.add(
+      mobileNo,
+    );
+    s.add(email);
+    s.add(
+      dob,
+    );
+    s.add(
+      city,
+    );
+    s.add(state);
+    s.add(profession);
   }
 
   @override
@@ -261,6 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ).loadedUser;
 
     return Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         appBar: customAppBar(dW),
@@ -269,6 +362,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             dW: dW,
             tS: tS,
             pageName: 'PROFILE',
+            extraButton: true,
+            extraButtonName: editable ? 'Save' : 'Edit',
+            extraButtononTap: toggleEdit,
           ),
           Padding(
             padding: const EdgeInsets.all(18.0),
@@ -278,192 +374,382 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           SizedBox(
-            height: dW * 0.04,
-          ),
-          Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: dW * 0.075,
-              ),
-              width: dW,
-              child: Row(
+            height: dW * 1.54,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
                 children: [
-                  Container(
-                    color: Colors.black,
-                    child: FadeInImage(
-                      height: dW * 0.27,
-                      width: dW * 0.27,
-                      image: Image.network(
-                        user.avatar,
-                        fit: BoxFit.cover,
-                      ).image,
-                      placeholder: AssetImage(
-                        user.gender == 'Male'
-                            ? 'assets/images/menProfile.jpg'
-                            : 'assets/images/womenProfile.png',
-                      ),
-                      imageErrorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.white,
-                          padding: user.gender == 'Male'
-                              ? const EdgeInsets.all(0)
-                              : EdgeInsets.symmetric(
-                                  horizontal: dW * 0.0265,
-                                ),
-                          width: _image != null ? dW * 0.35 : dW * 0.27,
-                          height: dW * 0.27,
-                          child: _image != null
-                              ? Image.file(
-                                  _image!,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.asset(
-                                  user.gender == 'Male'
-                                      ? 'assets/images/menProfile.jpg'
-                                      : 'assets/images/womenProfile2.png',
-                                ),
-                        );
-                      },
-                      fit: BoxFit.scaleDown,
-                    ),
+                  SizedBox(
+                    height: dW * 0.04,
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => pickImage(),
-                    child: Text(
-                      'Change profile photo',
-                      style: TextStyle(
-                        fontSize: 18 * tS,
-                        decoration: TextDecoration.underline,
-                      ),
+                  CircleAvatar(
+                    radius: dW * 0.2,
+                    foregroundImage: NetworkImage(
+                      user.avatar,
+                      // scale: 1,
                     ),
+                    backgroundImage:
+                        const AssetImage("assets/images/menProfile.jpg"),
                   ),
-                  const Spacer(),
-                  const Spacer()
-                ],
-              )),
-          user.editRequest
-              ? SizedBox(
-                  height: dW * 0.8,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Text(
-                        'YOUR EDIT REQUEST IS IN VERFICATION PROCESS.PLEASE WAIT FOR THE REPSONSE.FOR FURHTER QUERIES\nCONTACT ADMIN: 9284480539',
-                        style: TextStyle(
-                            fontSize: 14 * tS, fontWeight: FontWeight.w500),
-                      ),
-                    ),
+                  const SizedBox(
+                    height: 12,
                   ),
-                )
-              : Column(
-                  children: [
-                    Form(
-                      child: Container(
-                          margin: EdgeInsets.only(top: dW * 0.08),
-                          width: dW,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Spacer(),
-                              SizedBox(
-                                height: dW * 0.6,
-                                width: dW * 0.4,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  // ignore: prefer_const_literals_to_create_immutables
-                                  children: [
-                                    const Text('NAME :'),
-                                    const Text('MOBILE NO. :'),
-                                    const Text('EMAIL :'),
-                                    const Text('DATE OF BIRTHDAY :'),
-                                    if (user.married)
-                                      const Text('ANNIVERSARY :'),
-                                  ],
-                                ),
+                  TextButton(
+                    onPressed: pickImage,
+                    child: const Text("Change Profile Photo"),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Form(
+                      child: Column(children: [
+                        TextFormField(
+                          enabled: false,
+                          scrollPadding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  40),
+                          controller: mobileNo,
+                          style: const TextStyle(fontSize: 22),
+                          decoration: InputDecoration(
+                              filled: true,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
-                              const Spacer(),
-                              SizedBox(
-                                height: dW * 0.6,
-                                width: dW * 0.4,
-                                child: Form(
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    // ignore: prefer_const_literals_to_create_immutables
-                                    children: [
-                                      ProfileTextFormField(
-                                        tS: tS,
-                                        controller: name,
-                                        tIA: TextInputType.name,
-                                      ),
-                                      ProfileTextFormField(
-                                        tS: tS,
-                                        controller: mobileNo,
-                                        tIA: TextInputType.phone,
-                                      ),
-                                      ProfileTextFormField(
-                                        tS: tS,
-                                        controller: email,
-                                        tIA: TextInputType.emailAddress,
-                                      ),
-                                      GestureDetector(
-                                        onTap: (() => dateChanger(dob)),
-                                        child: ProfileTextFormField(
-                                          tS: tS,
-                                          controller: dob,
-                                          tIA: TextInputType.datetime,
-                                          unenabled: true,
-                                        ),
-                                      ),
-                                      if (user.married)
-                                        GestureDetector(
-                                          onTap: (() => dateChanger(anniv)),
-                                          child: ProfileTextFormField(
-                                            tS: tS,
-                                            controller: anniv,
-                                            tIA: TextInputType.text,
-                                            unenabled: true,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const Spacer(),
-                            ],
-                          )),
-                    ),
-                    SizedBox(
-                      height: dW * 0.1,
-                    ),
-                    CustomAuthButton(
-                        onTap: () {
-                          if (name.text != user.name ||
-                              mobileNo.text != user.phone ||
-                              email.text != user.email ||
-                              edited) sendRequest(dW);
-                        },
-                        buttonLabel: 'SEND REQUEST'),
-                    SizedBox(
-                      height: dW * 0.1,
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Note - Changes other than this can be carried out by sending email. Your changes will reflect in meantime.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 14 * tS, fontWeight: FontWeight.w500),
+                              labelText: 'Phone',
+                              fillColor:
+                                  Colors.amber.shade400.withOpacity(0.2)),
                         ),
-                      ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          enabled: editable,
+                          controller: name,
+                          style: const TextStyle(fontSize: 22),
+                          decoration: InputDecoration(
+                              filled: true,
+                              labelStyle: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                              labelText: 'Name',
+                              fillColor:
+                                  Colors.amber.shade300.withOpacity(0.2)),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          scrollPadding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  40),
+                          enabled: editable,
+                          controller: email,
+                          style: const TextStyle(fontSize: 22),
+                          decoration: InputDecoration(
+                              filled: true,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              labelText: 'Email',
+                              fillColor:
+                                  Colors.amber.shade400.withOpacity(0.2)),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        GestureDetector(
+                          onTap: () => (editable ? dateChanger(dob) : () {}),
+                          child: TextFormField(
+                            scrollPadding: EdgeInsets.only(
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom +
+                                        40),
+                            enabled: false,
+                            controller: dob,
+                            style: const TextStyle(fontSize: 22),
+                            decoration: InputDecoration(
+                                filled: true,
+                                labelStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                                labelText: 'Birthday',
+                                fillColor:
+                                    Colors.amber.shade400.withOpacity(0.2)),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          scrollPadding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  40),
+                          enabled: editable,
+                          controller: profession,
+                          style: const TextStyle(fontSize: 22),
+                          decoration: InputDecoration(
+                              filled: true,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              labelText: 'Profession',
+                              fillColor:
+                                  Colors.amber.shade400.withOpacity(0.2)),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          enabled: editable,
+                          scrollPadding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  40),
+                          controller: city,
+                          style: const TextStyle(fontSize: 22),
+                          decoration: InputDecoration(
+                              filled: true,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              labelText: 'City/Town/Village',
+                              fillColor:
+                                  Colors.amber.shade400.withOpacity(0.2)),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          scrollPadding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  40),
+                          enabled: editable,
+                          controller: state,
+                          style: const TextStyle(fontSize: 22),
+                          decoration: InputDecoration(
+                              filled: true,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              labelText: 'State',
+                              fillColor:
+                                  Colors.amber.shade400.withOpacity(0.2)),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Note - Phone number cannot be changed. For that contact us at hedaSaathi@gmail.com',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 14 * tS,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                      ]),
                     ),
-                  ],
-                )
+                  ),
+                ],
+              ),
+            ),
+          )
+          // Container(
+          //     padding: EdgeInsets.symmetric(
+          //       horizontal: dW * 0.075,
+          //     ),
+          //     width: dW,
+          //     child: Row(
+          //       children: [
+          //         Container(
+          //           color: Colors.black,
+          //           child: FadeInImage(
+          //             height: dW * 0.27,
+          //             width: dW * 0.27,
+          //             image: Image.network(
+          //               user.avatar,
+          //               fit: BoxFit.cover,
+          //             ).image,
+          //             placeholder: AssetImage(
+          //               user.gender == 'Male'
+          //                   ? 'assets/images/menProfile.jpg'
+          //                   : 'assets/images/womenProfile.png',
+          //             ),
+          //             imageErrorBuilder: (context, error, stackTrace) {
+          //               return Container(
+          //                 color: Colors.white,
+          //                 padding: user.gender == 'Male'
+          //                     ? const EdgeInsets.all(0)
+          //                     : EdgeInsets.symmetric(
+          //                         horizontal: dW * 0.0265,
+          //                       ),
+          //                 width: _image != null ? dW * 0.35 : dW * 0.27,
+          //                 height: dW * 0.27,
+          //                 child: _image != null
+          //                     ? Image.file(
+          //                         _image!,
+          //                         fit: BoxFit.cover,
+          //                       )
+          //                     : Image.asset(
+          //                         user.gender == 'Male'
+          //                             ? 'assets/images/menProfile.jpg'
+          //                             : 'assets/images/womenProfile2.png',
+          //                       ),
+          //               );
+          //             },
+          //             fit: BoxFit.scaleDown,
+          //           ),
+          //         ),
+          //         const Spacer(),
+          //         GestureDetector(
+          //           onTap: () => pickImage(),
+          //           child: Text(
+          //             'Change profile photo',
+          //             style: TextStyle(
+          //               fontSize: 18 * tS,
+          //               decoration: TextDecoration.underline,
+          //             ),
+          //           ),
+          //         ),
+          //         const Spacer(),
+          //         const Spacer()
+          //       ],
+          //     )),
+          // user.editRequest
+          //     ? SizedBox(
+          //         height: dW * 0.8,
+          //         child: Center(
+          //           child: Padding(
+          //             padding: const EdgeInsets.all(32.0),
+          //             child: Text(
+          //               'YOUR EDIT REQUEST IS IN VERFICATION PROCESS.PLEASE WAIT FOR THE REPSONSE.FOR FURHTER QUERIES\nCONTACT ADMIN: 9224480539',
+          //               style: TextStyle(
+          //                   fontSize: 14 * tS, fontWeight: FontWeight.w500),
+          //             ),
+          //           ),
+          //         ),
+          //       )
+          //     : Column(
+          //         children: [
+          //           Form(
+          //             child: Container(
+          //                 margin: EdgeInsets.only(top: dW * 0.08),
+          //                 width: dW,
+          //                 child: Row(
+          //                   crossAxisAlignment: CrossAxisAlignment.center,
+          //                   children: [
+          //                     const Spacer(),
+          //                     SizedBox(
+          //                       height: dW * 0.6,
+          //                       width: dW * 0.4,
+          //                       child: Column(
+          //                         mainAxisAlignment:
+          //                             MainAxisAlignment.spaceAround,
+          //                         crossAxisAlignment: CrossAxisAlignment.start,
+          //                         // ignore: prefer_const_literals_to_create_immutables
+          //                         children: [
+          //                           const Text('NAME :'),
+          //                           const Text('MOBILE NO. :'),
+          //                           const Text('EMAIL :'),
+          //                           const Text('DATE OF BIRTHDAY :'),
+          //                           if (user.married)
+          //                             const Text('ANNIVERSARY :'),
+          //                         ],
+          //                       ),
+          //                     ),
+          //                     const Spacer(),
+          //                     SizedBox(
+          //                       height: dW * 0.6,
+          //                       width: dW * 0.4,
+          //                       child: Form(
+          //                         child: Column(
+          //                           mainAxisAlignment:
+          //                               MainAxisAlignment.spaceAround,
+          //                           crossAxisAlignment:
+          //                               CrossAxisAlignment.start,
+          //                           // ignore: prefer_const_literals_to_create_immutables
+          //                           children: [
+          //                             ProfileTextFormField(
+          //                               tS: tS,
+          //                               controller: name,
+          //                               tIA: TextInputType.name,
+          //                             ),
+          //                             ProfileTextFormField(
+          //                               tS: tS,
+          //                               controller: mobileNo,
+          //                               tIA: TextInputType.phone,
+          //                             ),
+          //                             ProfileTextFormField(
+          //                               tS: tS,
+          //                               controller: email,
+          //                               tIA: TextInputType.emailAddress,
+          //                             ),
+          //                             GestureDetector(
+          //                               onTap: (() => dateChanger(dob)),
+          //                               child: ProfileTextFormField(
+          //                                 tS: tS,
+          //                                 controller: dob,
+          //                                 tIA: TextInputType.datetime,
+          //                                 unenabled: true,
+          //                               ),
+          //                             ),
+          //                             if (user.married)
+          //                               GestureDetector(
+          //                                 onTap: (() => dateChanger(anniv)),
+          //                                 child: ProfileTextFormField(
+          //                                   tS: tS,
+          //                                   controller: anniv,
+          //                                   tIA: TextInputType.text,
+          //                                   unenabled: true,
+          //                                 ),
+          //                               ),
+          //                           ],
+          //                         ),
+          //                       ),
+          //                     ),
+          //                     const Spacer(),
+          //                   ],
+          //                 )),
+          //           ),
+          //           SizedBox(
+          //             height: dW * 0.1,
+          //           ),
+          //           CustomAuthButton(
+          //               onTap: () {
+          //                 if (name.text != user.name ||
+          //                     mobileNo.text != user.phone ||
+          //                     email.text != user.email ||
+          //                     edited) sendRequest(dW);
+          //               },
+          //               buttonLabel: 'SEND REQUEST'),
+          //           SizedBox(
+          //             height: dW * 0.1,
+          //           ),
+          //           Center(
+          //             child: Padding(
+          //               padding: const EdgeInsets.all(8.0),
+          //               child: Text(
+          //                 'Note - Changes other than this can be carried out by sending email. Your changes will reflect in meantime.',
+          //                 textAlign: TextAlign.center,
+          //                 style: TextStyle(
+          //                     fontSize: 14 * tS, fontWeight: FontWeight.w500),
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       )
         ]));
   }
 }

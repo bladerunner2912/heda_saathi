@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-
 class Header extends StatelessWidget {
-  bool? chatSection;
+  bool? extraButton;
+  String? extraButtonName;
   final double dW;
   final double tS;
   final String pageName;
-  VoidCallback? onTap;
+  VoidCallback? extraButtononTap;
   Header({
     super.key,
-    this.chatSection = false,
+    this.extraButton = false,
+    this.extraButtonName = '',
     required this.dW,
     required this.tS,
-    required this.pageName, 
-    this.onTap ,
+    required this.pageName,
+    this.extraButtononTap,
   });
 
   @override
@@ -26,25 +27,27 @@ class Header extends StatelessWidget {
       padding:
           EdgeInsets.symmetric(vertical: dW * 0.022, horizontal: dW * 0.06),
       width: dW,
-      child: chatSection!
+      child: extraButton!
           ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Spacer(),
                 Text(
                   pageName,
                   style: TextStyle(
                     fontSize: 20 * tS,
                   ),
                 ),
+                const Spacer(),
                 GestureDetector(
-                  onTap: (() => onTap),
+                  onTap: extraButtononTap,
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black, width: 0.8)),
                     padding: EdgeInsets.symmetric(
                         horizontal: dW * 0.015, vertical: dW * 0.015),
                     child: Center(
-                      child: Text('CONNECT',
+                      child: Text(extraButtonName!,
                           style: TextStyle(
                             fontSize: 14 * tS,
                           )),

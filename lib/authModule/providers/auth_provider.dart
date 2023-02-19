@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/user_modal.dart';
 import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 import '../../api.dart';
 
@@ -110,6 +112,62 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  // ! editUseer
+  editUser({
+    String? name,
+    String? email,
+    String? profession,
+    String? city,
+    String? state,
+    DateTime? birth,
+  }) async {
+    var str = {
+      "id": loadedUser.id,
+      'name': name,
+      'city': city,
+      'profession': profession,
+      'state': state,
+      'email': email,
+      'dob': DateFormat('yyyy-MM-dd').format(birth!),
+    };
+
+    // print(str);
+    try {
+      var url = "${webApi['domain']}/users/updateUserDetails/";
+      var response = await http.post(Uri.parse(url), body: str);
+      var responseData = json.decode(response.body);
+      if (kDebugMode) {
+        print(responseData);
+      }
+      if (responseData != null) {
+        loadedUser = User(
+          address: responseData['user']['address'],
+          city: responseData['user']['city'],
+          pincode: responseData['user']['pincode'],
+          profession: responseData['user']['profession'] ?? '',
+          name: responseData['user']['name'],
+          dob: DateTime.parse(responseData['user']['dob']),
+          id: responseData['user']['_id'],
+          gender: responseData['user']['gender'],
+          avatar: responseData['user']['avatar'],
+          married: responseData['user']['married'] == 'Married' ? true : false,
+          phone: responseData['user']['phone'],
+          familyId: responseData['user']['familyId'] ?? '',
+          email: responseData['user']['email'],
+          state: responseData['user']['state'],
+        );
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return false;
+      }
+    }
+    return false;
   }
 
   // ! logout
