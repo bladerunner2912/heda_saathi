@@ -23,7 +23,6 @@ class AuthProvider with ChangeNotifier {
     try {
       var response = await http.get(Uri.parse(url));
       var responseBody = json.decode(response.body);
-      print(responseBody.length);
       for (int i = 0; i < responseBody.length; i++) {
         var rs = responseBody[i];
         _notifications.add(Notifications(
@@ -36,7 +35,6 @@ class AuthProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       return;
     }
   }
@@ -51,7 +49,6 @@ class AuthProvider with ChangeNotifier {
     try {
       var response = await http.post(Uri.parse(url), body: str);
       var responseBody = json.decode(response.body);
-      print(responseBody);
       if (responseBody) {
         unviewedNotifications.removeWhere(
           (unid) => unid == nid,
@@ -59,14 +56,12 @@ class AuthProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       return;
     }
   }
 
   // ! loginUser
   loginUser({String phone = '', String accessToken = ''}) async {
-    print("${webApi['domain']}");
     var url = '${webApi['domain']}/users/loginUser';
     var str = json.encode({
       'phone': phone,
@@ -78,7 +73,6 @@ class AuthProvider with ChangeNotifier {
       var responeData = jsonDecode(respone.body);
 
       // dob.replaceAll(RegExp('r/'), '-');
-      print(responeData);
       loadedUser = User(
         address: responeData['user']['address'],
         city: responeData['user']['city'],
@@ -101,7 +95,6 @@ class AuthProvider with ChangeNotifier {
         unviewedNotifications
             .add(responeData['user']["unviewedNotifications"][i].toString());
       }
-      print(loadedUser);
 
       // ? having a refreshedAccessToken when logging in each session;
       await storage.ready;
@@ -115,7 +108,6 @@ class AuthProvider with ChangeNotifier {
 
       return loadedUser;
     } catch (e) {
-      print(e);
       return null;
     }
   }
@@ -142,14 +134,10 @@ class AuthProvider with ChangeNotifier {
           body: image.readAsBytesSync());
 
       if (uploadResponse.statusCode == 200) {
-        print('here');
-        print(uploadResponse.headers);
-
         String bucketName = 'heda-saathi-data';
 
         String location = "https://$bucketName.s3.amazonaws.com/$objectName";
         loadedUser.avatar = location;
-        print('here');
         var url = "${webApi['domain']}/users/update/:${loadedUser.id}";
         var str = ({"avatar": location});
         var response = await http.post(
@@ -157,15 +145,13 @@ class AuthProvider with ChangeNotifier {
           body: str,
         );
         if (response.statusCode == 200) {
-          print("Check Image babes");
           notifyListeners();
         }
       } else {
-        print('error');
-        // Handle error
+        return; // Handle error
       }
     } catch (e) {
-      print(e);
+      return;
     }
   }
 

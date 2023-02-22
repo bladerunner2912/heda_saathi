@@ -146,7 +146,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     PermissionStatus permissionStatus = await permission.request();
 
-    print(permissionStatus);
 
     if (permissionStatus == PermissionStatus.restricted) {
       _showOpenAppSettingsDialog(context);

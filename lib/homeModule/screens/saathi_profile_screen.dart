@@ -105,6 +105,7 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
                     height: dW * 0.35,
                     width: dW * 0.35,
                     child: Container(
+                      clipBehavior: Clip.hardEdge,
                       decoration: const BoxDecoration(shape: BoxShape.circle),
                       width: dW * 0.35,
                       child: FadeInImage(

@@ -16,7 +16,25 @@ class SearchFunctionScreen extends StatefulWidget {
 class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
   bool error = false;
   bool loading = false;
-  TextEditingController search = TextEditingController();
+  TextEditingController name = TextEditingController();
+  TextEditingController place = TextEditingController();
+  TextEditingController phone = TextEditingController();
+  TextEditingController profession = TextEditingController();
+
+  errorGauge() {
+    if (name.text.length > 2 ||
+        place.text.length > 2 ||
+        phone.text.length > 2 ||
+        profession.text.length > 2) {
+      setState(() {
+        error = false;
+      });
+    } else {
+      setState(() {
+        error = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,23 +57,16 @@ class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
                       ),
                       TextFormField(
                         cursorColor: Colors.red,
-                        controller: search,
+                        controller: name,
                         maxLines: 1,
-                        onChanged: ((value) {
-                          if (value.length > 2) {
-                            error = false;
-                          } else {
-                            error = true;
-                          }
-                          setState(() {});
-                        }),
+                        onChanged: (_) => {errorGauge()},
                         decoration: InputDecoration(
                             prefixIcon: const Icon(
                               Icons.search,
                               color: Colors.red,
                             ),
                             suffixIcon: GestureDetector(
-                              onTap: () => {search.clear(), setState(() {})},
+                              onTap: () => {name.clear(), setState(() {})},
                               child: const Icon(Icons.close),
                             ),
                             filled: true,
@@ -63,27 +74,111 @@ class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
-                            hintText:
-                                'Saathi name, phone, city, state, profession or pincode,',
+                            hintText: 'Name',
                             fillColor: Colors.amber.shade400.withOpacity(0.2)),
                       ),
                       const SizedBox(
                         height: 8,
                       ),
+                      TextFormField(
+                        cursorColor: Colors.red,
+                        controller: phone,
+                        maxLines: 1,
+                        onChanged: (_) {
+                          errorGauge();
+                        },
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.phone,
+                              color: Colors.red,
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () => {phone.clear(), setState(() {})},
+                              child: const Icon(Icons.close),
+                            ),
+                            filled: true,
+                            labelStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            hintText: 'Phone  - 9284480539',
+                            fillColor: Colors.amber.shade400.withOpacity(0.2)),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      TextFormField(
+                        cursorColor: Colors.red,
+                        controller: place,
+                        maxLines: 1,
+                        onChanged: (_) {
+                          errorGauge();
+                        },
+                        decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.place,
+                              color: Colors.red,
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () => {place.clear(), setState(() {})},
+                              child: const Icon(Icons.close),
+                            ),
+                            filled: true,
+                            labelStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            hintText: 'City, state, pincode,',
+                            fillColor: Colors.amber.shade400.withOpacity(0.2)),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      TextFormField(
+                        cursorColor: Colors.red,
+                        controller: profession,
+                        maxLines: 1,
+                        decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.work,
+                              color: Colors.red,
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () =>
+                                  {profession.clear(), setState(() {})},
+                              child: const Icon(Icons.close),
+                            ),
+                            filled: true,
+                            labelStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            hintText: 'Profession - Trader , Doctor , Engineer',
+                            fillColor: Colors.amber.shade400.withOpacity(0.2)),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
                       if (error)
                         const Text(
-                          "Please enter than two more characters.",
+                          "Atleast one field must be 3 charachters long",
                           style: TextStyle(color: Colors.red),
                         ),
-                      SizedBox(
-                        height: dW * .5,
-                      ),
+                      const Spacer(),
+                      const Spacer(),
+                      const Spacer(),
+                      const Spacer(),
+                      const Spacer(),
                       elevatedButton(
                           width: dW * 0.4,
-                          height: dW * 0.2,
+                          height: dW * 0.1,
                           label: 'Search Saathi',
                           buttonFunction: (() async {
-                            if (search.text.length > 2) {
+                            if (name.text.length > 2 ||
+                                place.text.length > 2 ||
+                                phone.text.length > 2 ||
+                                profession.text.length > 2) {
                               loading = true;
                               setState(() {});
                               Provider.of<SearchProvider>(context,
@@ -91,7 +186,11 @@ class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
                                   .clear();
                               await Provider.of<SearchProvider>(context,
                                       listen: false)
-                                  .searchSaathi(search.text);
+                                  .searchSaathi(
+                                      name: name.text,
+                                      place: place.text,
+                                      profession: profession.text,
+                                      phone: phone.text);
                               loading = false;
                               setState(() {});
                               if (mounted) {
@@ -107,9 +206,7 @@ class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
                               });
                             }
                           })),
-                      SizedBox(
-                        height: dW * 0.2,
-                      ),
+                      const Spacer(),
                     ]),
                   ),
                 ],

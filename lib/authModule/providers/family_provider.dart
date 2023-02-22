@@ -45,7 +45,6 @@ class FamiliesProvider with ChangeNotifier {
       List<String> membersIdsString = [];
       for (int i = 0; i < responseBody["family"]["memberIds"].length; i++) {
         var id = responseBody["family"]["memberIds"][i].toString();
-        print(id);
         membersIdsString.add(id);
       }
       _family = Family(
@@ -73,10 +72,9 @@ class FamiliesProvider with ChangeNotifier {
       var response =
           await http.post(Uri.parse(url), body: str, headers: headers);
       var responseData = (json.decode(response.body));
-      print(responseData);
       loadSaathis(responseData, familyMembers, 'saathis');
     } catch (e) {
-      print(e);
+      return;
     }
   }
 

@@ -36,11 +36,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             height: widget.dW * 0.27,
             width: widget.dW * 0.27,
             child: FadeInImage(
-              height: widget.dW * 0.2,
-              width: widget.dW * 0.2,
+              height: widget.dW * 0.27,
+              width: widget.dW * 0.27,
               image: Image.network(
                 user.avatar,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ).image,
               placeholder: AssetImage(user.gender == 'Male'
                   ? 'assets/images/menProfile.jpg'

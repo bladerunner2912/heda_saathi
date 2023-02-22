@@ -23,7 +23,7 @@ class AdvertismentProvider with ChangeNotifier {
             websiteUrl: responeData[i]['websiteUrl']));
       }
     } catch (e) {
-      print(e);
+      return;
     }
     notifyListeners();
   }

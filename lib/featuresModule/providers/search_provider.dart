@@ -32,10 +32,18 @@ class SearchProvider with ChangeNotifier {
     return allEventFetched.firstWhere((user) => user.userId == userId);
   }
 
-  searchSaathi(query) async {
+  searchSaathi({
+    String name = '',
+    String place = '',
+    String phone = '',
+    String profession = '',
+  }) async {
     var url = '${webApi['domain']}/users/searchFunction';
     var sendStr = {
-      'query': query,
+      'name': name,
+      'place': place,
+      'profession': profession,
+      'phone': phone,
     };
     try {
       final response = await http.post(Uri.parse(url), body: sendStr);
@@ -98,7 +106,6 @@ class SearchProvider with ChangeNotifier {
       );
 
       var responseData = json.decode(response.body);
-      print(responseData);
       // print(responseData['users'][0]['_id']);
       loadSaathis(responseData, searchedMembers, 'users');
 
@@ -106,7 +113,6 @@ class SearchProvider with ChangeNotifier {
       notifyListeners();
       return searchedMembers;
     } catch (e) {
-      print(e);
       return searchedMembers;
     }
   }
@@ -125,12 +131,11 @@ class SearchProvider with ChangeNotifier {
         },
       );
       var responseData = json.decode(response.body);
-      print(responseData);
       loadSaathis(responseData, presentEvents, 'presentEvents');
       loadSaathis(responseData, pastEvents, 'pastEvents');
       loadSaathis(responseData, upcomingEvents, 'upcomingEvents');
     } catch (e) {
-      rethrow;
+      return;
     }
   }
 }

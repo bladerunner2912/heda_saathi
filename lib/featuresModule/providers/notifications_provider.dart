@@ -16,7 +16,6 @@ class NotificationProvider with ChangeNotifier {
     try {
       var response = await http.get(Uri.parse(url));
       var responseBody = json.decode(response.body);
-      print(responseBody.length);
       for (int i = 0; i < responseBody.length; i++) {
         var rs = responseBody[i];
         _notifications.add(Notifications(
@@ -29,7 +28,6 @@ class NotificationProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       return;
     }
   }
@@ -51,7 +49,6 @@ class NotificationProvider with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print(e);
       return;
     }
   }
