@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
-import 'package:heda_saathi/authModule/screens/confirm_otp_screen.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/authModule/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
-import '../../featuresModule/providers/search_provider.dart';
-import '../providers/family_provider.dart';
+import '../../common_functions.dart';
 
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:flutter/src/widgets/framework.dart';
@@ -25,24 +23,9 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
   late AuthProvider auth;
   bool isLoading = false;
 
-  pushOtpScreen() {
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => OtpScreen(
-                  number: phoneNumberController.text,
-                )));
-  }
+  
 
-  loadFamily(familyId, id) async {
-    await Provider.of<FamiliesProvider>(context, listen: false)
-        .loadFamilyandRelations(familyId, id);
-  }
-
-  loadEvents() async {
-    await Provider.of<SearchProvider>(context, listen: false)
-        .fetchBirthdaysAndAnniversary();
-  }
+  
 
   toggleErrorFlag() {
     setState(() {
@@ -68,11 +51,11 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
         //   user.familyId,
         //   user.id,
         // );
-        loadEvents();
+        if (mounted) loadEvents(context);
         await auth.sendOtp(phoneNumber: phoneNumberController.text);
         isLoading = false;
         setState(() {});
-        pushOtpScreen();
+        if (mounted) pushOtpScreen(context, phoneNumberController.text);
       } else {
         errorFlag = !errorFlag;
         isLoading = false;
@@ -81,8 +64,8 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
     }
   }
 
+  @override
   void initState() {
-    // TODO: implement initState
     auth = Provider.of<AuthProvider>(context, listen: false);
     super.initState();
   }

@@ -1,7 +1,9 @@
 class Saathi {
   String userId;
   String name;
-  String place;
+  String city;
+  String pincode;
+  String state;
   DateTime dob;
   String profession;
   String gender;
@@ -14,7 +16,9 @@ class Saathi {
     required this.userId,
     required this.dob,
     required this.profession,
-    required this.place,
+    required this.city,
+    required this.pincode,
+    required this.state,
     required this.phone,
     required this.gender,
     required this.name,

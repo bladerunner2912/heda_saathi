@@ -5,12 +5,12 @@ import 'package:heda_saathi/authModule/widgets/custom_button.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:otp_timer_button/otp_timer_button.dart';
 import 'package:provider/provider.dart';
+import '../../common_functions.dart';
 import '../providers/auth_provider.dart';
-import '../providers/family_provider.dart';
 
 class OtpScreen extends StatefulWidget {
   final String number;
-  OtpScreen({
+  const OtpScreen({
     required this.number,
     super.key,
   });
@@ -27,20 +27,14 @@ class _OtpScreenState extends State<OtpScreen> {
   bool isLoading = false;
   @override
   void initState() {
-    // TODO: implement initState
     phoneNumberController.text = widget.number;
     super.initState();
-  }
-
-  loadFamily(familyId, id) async {
-    await Provider.of<FamiliesProvider>(context, listen: false)
-        .loadFamilyandRelations(familyId, id);
   }
 
   loadUserAndFamily() async {
     final user = await Provider.of<AuthProvider>(context, listen: false)
         .loginUser(phone: phoneNumberController.text);
-    loadFamily(user.familyId, user.id);
+    if (mounted) loadFamily(user.familyId, user.id, context);
   }
 
   @override
@@ -167,15 +161,19 @@ class _OtpScreenState extends State<OtpScreen> {
             CustomAuthButton(
                 onTap: () async {
                   if (auth.otp == otp) {
-                    await loadUserAndFamily();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (_) => HomeScreenWidget()));
-                    return;
+                    loadUserAndFamily();
+                    errorFlag = true;
+                    setState(
+                      () => {},
+                    );
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const HomeScreenWidget()));
+                      return;
+                    }
                   }
-                  errorFlag = true;
-                  setState(
-                    () => {},
-                  );
                 },
                 buttonLabel: 'SUBMIT'),
           ]),

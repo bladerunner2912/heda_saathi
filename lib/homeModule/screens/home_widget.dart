@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/advertisment_model.dart';
@@ -8,8 +7,6 @@ import 'package:heda_saathi/homeModule/screens/add_saathi_screen.dart';
 import 'package:heda_saathi/homeModule/screens/saathi_profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../authModule/models/user_modal.dart';
 import '../../authModule/providers/auth_provider.dart';
 import '../../featuresModule/screens/profile_screen.dart';
 import '../models/saathi_model.dart';
@@ -22,7 +19,6 @@ class HomePage extends StatelessWidget {
     required this.dW,
     required this.dH,
     required this.tS,
-    required this.auth,
     required this.familyMembers,
     required this.advertisments,
   }) : super(key: key);
@@ -31,7 +27,6 @@ class HomePage extends StatelessWidget {
   final double dH;
   final double tS;
   final List<Saathi> familyMembers;
-  final AuthProvider auth;
   final List<Advertisment> advertisments;
 
   @override
@@ -68,12 +63,11 @@ class HomePage extends StatelessWidget {
           child: Text(
             'My Family',
             style: TextStyle(
-              decoration: TextDecoration.underline,
               fontSize: 20 * tS,
             ),
           ),
         ),
-        Container(
+        SizedBox(
           // color: Colors.teal.shade50.withOpacity(0.3),
           width: dW,
           child: SingleChildScrollView(
@@ -147,7 +141,6 @@ class HomePage extends StatelessWidget {
           child: Text(
             'Advertisment',
             style: TextStyle(
-              decoration: TextDecoration.underline,
               fontSize: 20 * tS,
             ),
           ),

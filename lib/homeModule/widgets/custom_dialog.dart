@@ -17,14 +17,14 @@ class CustomDialog {
         builder: (_) => CupertinoAlertDialog(
           title: Text(
             heading,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           content: Text(
             subHeading,
-            style: TextStyle(
+            style: const TextStyle(
               color: kDarkGray,
             ),
           ),
@@ -35,7 +35,7 @@ class CustomDialog {
               },
               child: Text(
                 negativeButtonText ?? 'Cancel',
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
             ElevatedButton(
@@ -52,14 +52,14 @@ class CustomDialog {
         builder: (_) => AlertDialog(
           title: Text(
             heading,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           content: Text(
             subHeading,
-            style: TextStyle(
+            style: const TextStyle(
               color: kDarkGray,
             ),
           ),

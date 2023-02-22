@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/homeModule/models/saathi_model.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 import '/api.dart';
@@ -32,6 +30,23 @@ class SearchProvider with ChangeNotifier {
     allEventFetched.addAll(upcomingEvents);
 
     return allEventFetched.firstWhere((user) => user.userId == userId);
+  }
+
+  searchSaathi(query) async {
+    var url = '${webApi['domain']}/users/searchFunction';
+    var sendStr = {
+      'query': query,
+    };
+    try {
+      final response = await http.post(Uri.parse(url), body: sendStr);
+      var responseData = json.decode(response.body);
+      // print(responseData);
+      // print(responseData['users'][0]['_id']);
+      loadSaathis(responseData, _searchedMembers, 'users');
+      notifyListeners();
+    } catch (e) {
+      return _searchedMembers;
+    }
   }
 
   searchMember({
@@ -115,7 +130,7 @@ class SearchProvider with ChangeNotifier {
       loadSaathis(responseData, pastEvents, 'pastEvents');
       loadSaathis(responseData, upcomingEvents, 'upcomingEvents');
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 }

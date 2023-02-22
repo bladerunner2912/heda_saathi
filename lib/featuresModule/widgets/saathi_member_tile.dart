@@ -25,7 +25,9 @@ class SearchScreenTile extends StatelessWidget {
                 SaathiProfileScreen(memeberId: saathi.userId)),
       ),
       child: Container(
+        clipBehavior: Clip.hardEdge,
         width: dW,
+        height: dW * 0.23,
         margin: EdgeInsets.only(
           top: dW * (isFirst ? 0.02 : 0.035),
         ),
@@ -36,59 +38,38 @@ class SearchScreenTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              height: dW * 0.22,
-              width: dW * 0.22,
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomLeft: Radius.circular(12))),
-                width: dW * 0.22,
-                child: FadeInImage(
-                  width: dW * 0.22,
-                  image: Image.network(
-                    saathi.avatar ?? '',
-                    fit: BoxFit.cover,
-                  ).image,
-                  placeholder: AssetImage(''),
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: dW * 0.22,
-                      width: dW * 0.22,
-                      decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              bottomLeft: Radius.circular(12)),
-                          image: DecorationImage(
-                              image: Image.asset(
-                            saathi.gender == 'Male'
-                                ? 'assets/images/menProfile.jpg'
-                                : 'assets/images/womenProfile2.png',
-                          ).image)),
-                    );
-
-                    //  Container(
-                    //   decoration: const BoxDecoration(
-                    //       borderRadius: BorderRadius.only(
-                    //           topLeft: Radius.circular(12),
-                    //           bottomLeft: Radius.circular(12))),
-                    //   padding: saathi.gender == 'Male'
-                    //       ? const EdgeInsets.all(0)
-                    //       : EdgeInsets.symmetric(
-                    //           horizontal: dW * 0.0265,
-                    //         ),
-                    //   width: dW * 0.22,
-                    //   height: dW * 0.22,
-                    //   child: Image.asset(
-                    //     saathi.gender == 'Male'
-                    //         ? 'assets/images/menProfile.jpg'
-                    //         : 'assets/images/womenProfile2.png',
-                    //   ),
-                    // );
-                  },
-                  fit: BoxFit.contain,
+            Container(
+              width: dW * 0.23,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
                 ),
+              ),
+              child: FadeInImage.assetNetwork(
+                width: dW * 0.23,
+                image: saathi.avatar!,
+                placeholder: saathi.gender == 'Male'
+                    ? 'assets/images/menProfile.jpg'
+                    : 'assets/images/womenProfile.png',
+                imageErrorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: dW * 0.23,
+                    color: Colors.white,
+                    padding: saathi.gender == 'Male'
+                        ? const EdgeInsets.all(0)
+                        : EdgeInsets.symmetric(
+                            horizontal: dW * 0.0265,
+                          ),
+                    child: Image.asset(
+                      saathi.gender == 'Male'
+                          ? 'assets/images/menProfile.jpg'
+                          : 'assets/images/womenProfile2.png',
+                      fit: BoxFit.fitHeight,
+                    ),
+                  );
+                },
+                fit: BoxFit.fitWidth,
               ),
             ),
             const Spacer(),
@@ -110,7 +91,7 @@ class SearchScreenTile extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    saathi.place,
+                    "${saathi.city}, ${saathi.state} - ${saathi.pincode}",
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600),

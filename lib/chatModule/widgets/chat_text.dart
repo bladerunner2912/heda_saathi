@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class ChatText extends StatefulWidget {
   final double dW;
@@ -70,7 +67,8 @@ class _ChatTextState extends State<ChatText> {
                   widget.byUser?    Icon(
                         Icons.check,
                         color: widget.isDelieverd ? Colors.red : Colors.white,
-                      ) : SizedBox.shrink()
+                            )
+                          : const SizedBox.shrink()
                     ],
                   ))
             ],

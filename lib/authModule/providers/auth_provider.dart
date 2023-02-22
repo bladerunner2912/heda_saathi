@@ -8,11 +8,61 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 import '../../api.dart';
+import '../../featuresModule/models/notification.dart';
 
 class AuthProvider with ChangeNotifier {
   final LocalStorage storage = LocalStorage('HedaSaathi');
   late User loadedUser;
+  List<String> unviewedNotifications = [];
   String otp = '';
+  final List<Notifications> _notifications = [];
+  List<Notifications> get notifications => _notifications;
+
+  fetchNotifications() async {
+    var url = "${webApi["domain"]}/notifications/fetchNotifications";
+    try {
+      var response = await http.get(Uri.parse(url));
+      var responseBody = json.decode(response.body);
+      print(responseBody.length);
+      for (int i = 0; i < responseBody.length; i++) {
+        var rs = responseBody[i];
+        _notifications.add(Notifications(
+          id: rs['_id'],
+          content: rs['content'],
+          title: rs['title'],
+          webUrl: rs['webUrl'],
+          recievedAt: DateTime.parse(rs['createdAt']),
+        ));
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+      return;
+    }
+  }
+
+  viewedANotification(String id, String nid) async {
+    // ? query to remove that notificationId from unviewedNotifications ,user will have a field unviewedNotification  which will be list of ids of unviewed notification.
+    var url = "${webApi["domain"]}/notifications/viewedANotification";
+    var str = {
+      "uid": id,
+      "nid": nid,
+    };
+    try {
+      var response = await http.post(Uri.parse(url), body: str);
+      var responseBody = json.decode(response.body);
+      print(responseBody);
+      if (responseBody) {
+        unviewedNotifications.removeWhere(
+          (unid) => unid == nid,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+      return;
+    }
+  }
 
   // ! loginUser
   loginUser({String phone = '', String accessToken = ''}) async {
@@ -45,7 +95,12 @@ class AuthProvider with ChangeNotifier {
         email: responeData['user']['email'],
         state: responeData['user']['state'],
       );
-
+      for (int i = 0;
+          i < responeData['user']['unviewedNotifications'].length;
+          i++) {
+        unviewedNotifications
+            .add(responeData['user']["unviewedNotifications"][i].toString());
+      }
       print(loadedUser);
 
       // ? having a refreshedAccessToken when logging in each session;
@@ -216,8 +271,17 @@ class AuthProvider with ChangeNotifier {
     loadedUser.editRequest = true;
     notifyListeners();
   }
+
+  int unviewedNotificationsCount() {
+    notifyListeners();
+    return unviewedNotifications.length;
+  }
+
+  ///
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////   //////////////////////////////////////////////////
 
   
 

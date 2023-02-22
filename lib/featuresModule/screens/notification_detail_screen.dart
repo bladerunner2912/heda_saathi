@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
+import 'package:provider/provider.dart';
 
-class NotificationDetailScreen extends StatelessWidget {
-  const NotificationDetailScreen({super.key});
+import '../models/notification.dart';
+
+class NotificationDetailScreen extends StatefulWidget {
+  final Notifications notification;
+  final bool openedFirstTime;
+  const NotificationDetailScreen(
+      {required this.notification, required this.openedFirstTime, super.key});
+
+  @override
+  State<NotificationDetailScreen> createState() =>
+      _NotificationDetailScreenState();
+}
+
+class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.openedFirstTime) myInit();
+  }
+
+  myInit() async {
+    final uid = Provider.of<AuthProvider>(context, listen: false).loadedUser.id;
+    await Provider.of<AuthProvider>(context, listen: false)
+        .viewedANotification(uid, widget.notification.id);
+    // ignore: use_build_context_synchronously
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +39,7 @@ class NotificationDetailScreen extends StatelessWidget {
       appBar: customAppBar(dW),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Header(dW: dW, tS: tS, pageName: 'Notification Details'),
           const SizedBox(
             height: 10,
@@ -34,7 +60,7 @@ class NotificationDetailScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Papa this was going so well what i can tell you about my experiences there. Enjoying food with best studemts in the world all too very pretty beauty and what not.',
+                  widget.notification.title,
                   style: TextStyle(fontSize: 19 * tS),
                 ),
               ],
@@ -56,7 +82,7 @@ class NotificationDetailScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis neque non massa interdum viverra. Duis ac mauris ultrices, egestas odio et, rhoncus nulla. Nunc vel mollis risus. Donec vitae orci orci. Donec velit lorem, luctus eu scelerisque ut, porttitor porta arcu. Sed sed ante quis tellus sodales rhoncus quis ut dolor. In sit amet lorem eu justo tincidunt congue eu accumsan tortor. Cras maximus non arcu lacinia convallis. Nullam interdum, diam vel iaculis porttitor, turpis neque rutrum libero, ac elementum orci turpis quis ante. Integer consectetur vestibulum luctus. Mauris lobortis quam nisl, vitae hendrerit orci porta nec. Etiam nec orci aliquet ante sodales tempus. Integer accumsan lorem eu tortor tempor, sed consectetur tortor ultricies. Integer maximus lectus quis cursus tristique. Nam et ultrices lectus, sed commodo dui. ',
+                  widget.notification.content,
                   style: TextStyle(fontSize: 19 * tS),
                 ),
               ],

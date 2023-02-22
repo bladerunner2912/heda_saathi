@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" /><!-- This Line -->
    <application
    android:usesCleartextTraffic="true"
-        android:label="heda_saathi"
+        android:label="Heda Saathi"
         android:name="${applicationName}"
         android:icon="@mipmap/heda_saathi">
         <activity

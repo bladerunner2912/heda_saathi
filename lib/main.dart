@@ -2,14 +2,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:heda_saathi/api.dart';
 import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 import 'package:heda_saathi/authModule/providers/family_provider.dart';
 import 'package:heda_saathi/featuresModule/providers/search_provider.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
-
+import 'package:http/http.dart' as http;
 import 'authModule/screens/splash_screen.dart';
+import 'featuresModule/providers/notifications_provider.dart';
 
 final LocalStorage storage = LocalStorage('HedaSaathi');
 
@@ -22,10 +24,28 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'hedaji', // title
   importance: Importance.high,
 );
+
+Future<void> _storeNotifications(RemoteNotification notification) async {
+  var url = "${webApi["domain"]}/notifications/createNotification";
+  var str = {
+    "title": notification.title,
+    "content": notification.body,
+    "webUrl": notification.android!.link ?? "",
+    "imageUrl": notification.android!.imageUrl ?? ""
+  };
+  try {
+    await http.post(Uri.parse(url), body: str);
+    // print(response.body);
+  } catch (e) {
+    // print(e);
+    return;
+  }
+}
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  print("Handling a background message: ${message.messageId}");
+  _storeNotifications(message.notification!);
 }
 
 Future<void> main() async {
@@ -50,32 +70,32 @@ Future<void> main() async {
   );
 
   onSelectNotification(dynamic payload) async {
-    print('clicked');
   }
 
-  onDidRecieveLocalNotification(
-      int id, String? title, String? body, String? payload) {
-    print('received');
-  }
+  // // onDidRecieveLocalNotification(
+  // //     int id, String? title, String? body, String? payload) {
+  // //   print('received');
+  // // }
 
   var initializationSettingsAndroid = const AndroidInitializationSettings(
       '@mipmap/heda_saathi'); // <- default icon name is @mipmap/ic_launcher
-  var initializationSettingsIOS = DarwinInitializationSettings(
-      onDidReceiveLocalNotification: onDidRecieveLocalNotification);
+
+  // // var initializationSettingsIOS = DarwinInitializationSettings(
+  // //     onDidReceiveLocalNotification: onDidRecieveLocalNotification);
 
   var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    android: initializationSettingsAndroid,
+  );
 
   flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onDidReceiveNotificationResponse: onSelectNotification);
-
 
   // !  If message comes what should happen. NotificationDetails is widget responsible for the hovering thing.
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
-    print(notification);
-    print(android);
+    // print(notification);
+    // print(android);
     if (notification != null && android != null) {
       flutterLocalNotificationsPlugin.show(
           notification.hashCode,
@@ -88,6 +108,8 @@ Future<void> main() async {
               priority: Priority.high,
             ),
           ));
+
+      _storeNotifications(notification);
     }
   });
 
@@ -183,6 +205,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => FamiliesProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => SearchProvider()),
+        ChangeNotifierProvider(create: (context) => NotificationProvider()),
         ChangeNotifierProvider(create: (context) => AdvertismentProvider())
       ],
       child: const MyApp(),

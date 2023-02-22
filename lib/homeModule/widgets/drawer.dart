@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
-import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
 import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/screens/birthday_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/help_screen.dart';
@@ -20,7 +19,51 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldKey = GlobalKey<ScaffoldState>();
     final auth = Provider.of<AuthProvider>(context);
+    drawerTile(name, onPressed, context,
+            {bool isLogout = false, bool isWebPage = false}) =>
+        GestureDetector(
+          // style: ButtonStyle(
+          //     backgroundColor: MaterialStateProperty.resolveWith((states) {
+          //   if (states.contains(MaterialState.pressed)) {
+          //     return isLogout ? Colors.green : Colors.red;
+          //   }
+          //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
+          // })),
+          onTap: isWebPage
+              ? () async {
+                  String url = onPressed;
+                  var urllaunchable = await canLaunchUrl(
+                      Uri.parse(url)); //canLaunch is from url_launcher package
+                  if (urllaunchable) {
+                    await launchUrl(Uri.parse(
+                        url)); //launch is from url_launcher package to launch URL
+                  } else {
+                    ScaffoldMessenger.of(scaffoldKey.currentState!.context)
+                        .showSnackBar(const SnackBar(
+                      content: Text(
+                        "Error! Please try again later.",
+                      ),
+                      backgroundColor: Colors.red,
+                    ));
+                  }
+                }
+              : () => navigator(context, onPressed),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: 12,
+              top: 12,
+            ),
+            child: SizedBox(
+              width: 240,
+              child: Text(
+                name,
+                style: TextStyle(fontSize: isLogout ? 22 : 18),
+              ),
+            ),
+          ),
+        );
     return Drawer(
       width: dW * 0.7,
       child: SizedBox(
@@ -137,7 +180,7 @@ class CustomDrawer extends StatelessWidget {
                       bottom: 12,
                       top: 12,
                     ),
-                    child: Container(
+                    child: SizedBox(
                       width: 240,
                       child: Text(
                         'LOGOUT',
@@ -153,40 +196,4 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
-drawerTile(name, onPressed, context,
-        {bool isLogout = false, bool isWebPage = false}) =>
-    GestureDetector(
-      // style: ButtonStyle(
-      //     backgroundColor: MaterialStateProperty.resolveWith((states) {
-      //   if (states.contains(MaterialState.pressed)) {
-      //     return isLogout ? Colors.green : Colors.red;
-      //   }
-      //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
-      // })),
-      onTap: isWebPage
-          ? () async {
-              String url = onPressed;
-              var urllaunchable = await canLaunchUrl(
-                  Uri.parse(url)); //canLaunch is from url_launcher package
-              if (urllaunchable) {
-                await launchUrl(Uri.parse(
-                    url)); //launch is from url_launcher package to launch URL
-              } else {
-                print("URL can't be launched.");
-              }
-            }
-          : () => navigator(context, onPressed),
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: 12,
-          top: 12,
-        ),
-        child: Container(
-          width: 240,
-          child: Text(
-            name,
-            style: TextStyle(fontSize: isLogout ? 22 : 18),
-          ),
-        ),
-      ),
-    );
+

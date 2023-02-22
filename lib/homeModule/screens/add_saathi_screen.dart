@@ -1,8 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
-import 'package:heda_saathi/authModule/widgets/custom_button.dart';
 import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,7 +17,7 @@ class AddSaathiScreen extends StatelessWidget {
       appBar: customAppBar(dW),
       body: Column(children: [
         Header(dW: dW, tS: tS, pageName: 'ADD SAATHI'),
-        Spacer(),
+        const Spacer(),
         Center(
           child: elevatedButton(
             buttonColor: Colors.blue.shade400,
@@ -35,13 +33,15 @@ class AddSaathiScreen extends StatelessWidget {
                 await launchUrl(Uri.parse(
                     url)); //launch is from url_launcher package to launch URL
               } else {
-                print("URL can't be launched.");
+                if (kDebugMode) {
+                  print("URL can't be launched.");
+                }
               }
             },
           ),
         ),
-        Spacer(),
-        Spacer(),
+        const Spacer(),
+        const Spacer(),
       ]),
     );
   }

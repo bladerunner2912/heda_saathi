@@ -1,14 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:heda_saathi/authModule/providers/auth_provider.dart';
-import 'package:heda_saathi/common_functions.dart';
-import 'package:heda_saathi/homeModule/screens/chat_widget.dart';
-import 'package:heda_saathi/homeModule/widgets/custom_dialog.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../main.dart';
 
 class ChatScreen extends StatefulWidget {
   final double dW;
@@ -22,10 +12,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final ImagePicker _picker = ImagePicker();
-  File? _image;
-  late ImageSource source;
-  late AuthProvider auth;
+  // final ImagePicker _picker = ImagePicker();
+  // File? _image;
+  // late ImageSource source;
+  // late AuthProvider auth;
 
   // pickImage() async {
   //   await showModalBottomSheet(
@@ -184,9 +174,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    auth = Provider.of<AuthProvider>(context, listen: false);
+    // auth = Provider.of<AuthProvider>(context, listen: false);
   }
 
   @override

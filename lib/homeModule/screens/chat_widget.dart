@@ -41,7 +41,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: ((context) =>  HomeScreenWidget(
+                            builder: ((context) => const HomeScreenWidget(
                             currentIndex: 1,
                           ))));
                 },child: const Icon(Icons.arrow_back_sharp),),

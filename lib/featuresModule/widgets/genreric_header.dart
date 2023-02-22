@@ -1,16 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class Header extends StatelessWidget {
-  bool? extraButton;
-  String? extraButtonName;
+  final bool extraButton;
+  final String extraButtonName;
   final double dW;
   final double tS;
   final String pageName;
-  VoidCallback? extraButtononTap;
-  Header({
+  final VoidCallback? extraButtononTap;
+  const Header({
     super.key,
     this.extraButton = false,
     this.extraButtonName = '',
@@ -27,11 +24,11 @@ class Header extends StatelessWidget {
       padding:
           EdgeInsets.symmetric(vertical: dW * 0.022, horizontal: dW * 0.06),
       width: dW,
-      child: extraButton!
+      child: extraButton
           ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 Text(
                   pageName,
                   style: TextStyle(
@@ -47,7 +44,7 @@ class Header extends StatelessWidget {
                     padding: EdgeInsets.symmetric(
                         horizontal: dW * 0.015, vertical: dW * 0.015),
                     child: Center(
-                      child: Text(extraButtonName!,
+                      child: Text(extraButtonName,
                           style: TextStyle(
                             fontSize: 14 * tS,
                           )),

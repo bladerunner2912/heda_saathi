@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:heda_saathi/featuresModule/screens/search_function_screen.dart';
 
-import '../../featuresModule/screens/search_screen.dart';
 
 class CustomHomeScreenAppBar extends StatelessWidget {
   const CustomHomeScreenAppBar({
@@ -54,7 +54,7 @@ class CustomHomeScreenAppBar extends StatelessWidget {
               onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SearchScreen())),
+                      builder: (context) => const SearchFunctionScreen())),
               child: Icon(
                 size: dW * 0.07,
                 Icons.search,

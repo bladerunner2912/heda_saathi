@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:heda_saathi/featuresModule/screens/anniversary_screen.dart';
+import 'package:heda_saathi/authModule/providers/auth_provider.dart';
+import 'package:heda_saathi/featuresModule/widgets/notification_tile.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
+import 'package:provider/provider.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -10,52 +12,16 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  //     FlutterLocalNotificationsPlugin();
-
-  // onSelectNotification(dynamic payload) async {
-  //   print('clicked');
-  // }
-
-  // onDidRecieveLocalNotification(
-  //     int id, String? title, String? body, String? payload) {
-  //   print('received');
-  // }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // var initializationSettingsAndroid = const AndroidInitializationSettings(
-    //     '@mipmap/heda_saathi'); // <- default icon name is @mipmap/ic_launcher
-    // var initializationSettingsIOS = DarwinInitializationSettings(
-    //     onDidReceiveLocalNotification: onDidRecieveLocalNotification);
-
-    // var initializationSettings = InitializationSettings(
-    //     android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-
-    // flutterLocalNotificationsPlugin.initialize(initializationSettings,
-    //     onDidReceiveNotificationResponse: onSelectNotification);
-
-    // flutterLocalNotificationsPlugin.show(
-    //     0,
-    //     'New Post',
-    //     'asd',
-    //     const NotificationDetails(
-    //         android: AndroidNotificationDetails(
-    //       'hedaji-2b9e8',
-    //       'hedaji',
-    //       autoCancel: true,
-    //       playSound: true,
-    //     )),
-    //     payload: 'asdasd');
-  }
+  List<String> unviewedNotifications = [];
 
   @override
   Widget build(BuildContext context) {
     final dH = MediaQuery.of(context).size.height;
     final dW = MediaQuery.of(context).size.width;
     final tS = MediaQuery.of(context).textScaleFactor;
+    unviewedNotifications =
+        Provider.of<AuthProvider>(context).unviewedNotifications;
+    final notifications = Provider.of<AuthProvider>(context).notifications;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -74,15 +40,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Column(children: [
-                DummyTile(dW: dW, tS: tS, opened: true),
-                DummyTile(dW: dW, tS: tS, opened: true),
-                DummyTile(dW: dW, tS: tS, opened: true),
-                DummyTile(dW: dW, tS: tS),
-                DummyTile(dW: dW, tS: tS),
-                DummyTile(dW: dW, tS: tS),
-                DummyTile(dW: dW, tS: tS),
-                DummyTile(dW: dW, tS: tS),
-                DummyTile(dW: dW, tS: tS),
+                ...List.generate(
+                    notifications.length,
+                    (index) => NotificationTile(
+                          dW: dW,
+                          tS: tS,
+                          notification: notifications[index],
+                          opened: unviewedNotifications
+                              .contains(notifications[index].id),
+                        )),
                 SizedBox(
                   height: dW * 0.3,
                 ),

@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
-import 'package:heda_saathi/chatModule/widgets/chat_text.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import '../chat_model.dart';
 
 class ChatScreenInstance extends StatefulWidget {
   final double dW;
@@ -29,7 +24,7 @@ class _ChatScreenInstanceState extends State<ChatScreenInstance> {
 
   bool show = false;
   FocusNode n = FocusNode();
-  late IO.Socket socket;
+  // late IO.Socket socket;
 
   void connect() async {
     // socket =

@@ -7,7 +7,7 @@ import 'package:heda_saathi/featuresModule/widgets/saathi_member_tile.dart';
 import 'package:provider/provider.dart';
 
 class SearchResultScreen extends StatefulWidget {
-  SearchResultScreen({super.key});
+  const SearchResultScreen({super.key});
 
   @override
   State<SearchResultScreen> createState() => _SearchResultScreenState();
@@ -51,6 +51,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                     ),
                   )
                 : SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     padding: EdgeInsets.symmetric(horizontal: dW * 0.04),
                     scrollDirection: Axis.vertical,
                     child: Column(
@@ -67,6 +68,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                             isFirst: index == 0 ? true : false,
                           ),
                         ),
+                        SizedBox(height: dW * 0.4)
                       ],
                     )),
           )

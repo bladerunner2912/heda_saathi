@@ -4,15 +4,14 @@ class ProfileTextFormField extends StatefulWidget {
   final double tS;
   final TextEditingController controller;
   final TextInputType tIA;
-  bool unenabled;
-  ProfileTextFormField(
-      {Key? key,
-      required this.tS,
-      required this.controller,
-      required this.tIA,
-      this.unenabled = false,
-      })
-      : super(key: key);
+  final bool unenabled;
+  const ProfileTextFormField({
+    Key? key,
+    required this.tS,
+    required this.controller,
+    required this.tIA,
+    this.unenabled = false,
+  }) : super(key: key);
 
   @override
   State<ProfileTextFormField> createState() => _ProfileTextFormFieldState();
@@ -21,8 +20,7 @@ class ProfileTextFormField extends StatefulWidget {
 class _ProfileTextFormFieldState extends State<ProfileTextFormField> {
   @override
   Widget build(BuildContext context) {
-    return 
-         Container(
+    return Container(
       padding: !widget.unenabled
           ? const EdgeInsets.only(top: 2, bottom: 2, left: 2)
           : EdgeInsets.zero,

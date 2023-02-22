@@ -256,7 +256,7 @@ class _SearchScreenBodyState extends State<SearchScreenBody> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SearchResultScreen()));
+                            builder: (context) => const SearchResultScreen()));
                     loading = false;
                     setState(() {});
                   },

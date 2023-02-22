@@ -10,6 +10,7 @@ import '../../api.dart';
 class FamiliesProvider with ChangeNotifier {
   List<Saathi> familyMembers = [];
 
+  // ignore: prefer_typing_uninitialized_variables
   var userIndex;
 
   // ignore: prefer_final_fields

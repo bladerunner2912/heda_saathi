@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/family_model.dart';
 import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
@@ -8,13 +7,12 @@ import 'package:heda_saathi/homeModule/screens/home_widget.dart';
 import 'package:heda_saathi/homeModule/widgets/chat_screen_section.dart';
 import 'package:heda_saathi/homeModule/widgets/drawer.dart';
 import 'package:provider/provider.dart';
-import '../../authModule/models/user_modal.dart';
 import '../../authModule/providers/family_provider.dart';
 import '../widgets/custom_home_screen_app_bar.dart';
 
 class HomeScreenWidget extends StatefulWidget {
-  int? currentIndex;
-  HomeScreenWidget({super.key, this.currentIndex = 0});
+  final int currentIndex;
+  const HomeScreenWidget({super.key, this.currentIndex = 0});
 
   @override
   State<HomeScreenWidget> createState() => _HomeScreenWidgetState();
@@ -22,15 +20,18 @@ class HomeScreenWidget extends StatefulWidget {
 
 class _HomeScreenWidgetState extends State<HomeScreenWidget> {
   late int currentIndex;
-  late AuthProvider auth;
-  late User user;
   late Family family;
- 
+  bool loading = false;
 
   switchBottomNavBar(int value) {
     setState(() {
       currentIndex = value;
     });
+  }
+
+  loadNotifications() async {
+    await Provider.of<AuthProvider>(context, listen: false)
+        .fetchNotifications();
   }
 
   myInit() async {
@@ -53,9 +54,16 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     //         ));
     //   }
     // });
-    currentIndex = widget.currentIndex!;
-    auth = Provider.of<AuthProvider>(context, listen: false);
-    user = auth.loadedUser;
+    setState(() {
+      loading = true;
+    });
+    currentIndex = widget.currentIndex;
+
+    loadNotifications();
+
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -70,6 +78,8 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
     final dW = MediaQuery.of(context).size.width;
     final dH = MediaQuery.of(context).size.height;
     final tS = MediaQuery.of(context).textScaleFactor;
+    final unviewedNotifications =
+        Provider.of<AuthProvider>(context).unviewedNotifications;
     final advertisments =
         Provider.of<AdvertismentProvider>(context).advertsiments;
     final familyMembers = Provider.of<FamiliesProvider>(context).familyMembers;
@@ -82,17 +92,26 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         preferredSize: Size.fromHeight(dW * 0.2),
         child: CustomHomeScreenAppBar(dW: dW, scaffoldKey: scaffoldKey, tS: tS),
       ),
-      body: currentIndex != 0
-          ? currentIndex != 2
-              ? ChatScreen(dW: dW, dH: dH, tS: tS)
-              : const NotificationsScreen()
-          : HomePage(
-              dW: dW,
-              dH: dH,
-              tS: tS,
-              auth: auth,
-              advertisments: advertisments,
-              familyMembers: familyMembers),
+      body: loading
+          ? const Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  color: Colors.amber,
+                ),
+              ),
+            )
+          : currentIndex != 0
+              ? currentIndex != 2
+                  ? ChatScreen(dW: dW, dH: dH, tS: tS)
+                  : const NotificationsScreen()
+              : HomePage(
+                  dW: dW,
+                  dH: dH,
+                  tS: tS,
+                  advertisments: advertisments,
+                  familyMembers: familyMembers),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 3,
         showSelectedLabels: false,
@@ -166,12 +185,22 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                 child: const Icon(Icons.notifications)),
             icon: GestureDetector(
               onTap: () => switchBottomNavBar(2),
-              child: SizedBox(
-                width: dW * 0.33,
-                child: const Icon(
-                  Icons.notifications_none,
+              child: Stack(children: [
+                SizedBox(
+                  width: dW * 0.33,
+                  child: const Icon(
+                    Icons.notifications_none,
+                  ),
                 ),
-              ),
+                if (unviewedNotifications.isNotEmpty)
+                  Positioned(
+                    right: dW * 0.16,
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.amber,
+                      radius: 8,
+                    ),
+                  )
+              ]),
             ),
           ),
         ],

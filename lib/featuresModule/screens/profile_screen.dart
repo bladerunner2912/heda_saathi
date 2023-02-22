@@ -1,21 +1,15 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
-
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
-import 'package:heda_saathi/authModule/widgets/custom_button.dart';
 import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-
 import '../../authModule/models/user_modal.dart';
 import '../../homeModule/widgets/custom_dialog.dart';
-import '../../homeModule/widgets/profile_text_form_field.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -33,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController profession = TextEditingController();
   TextEditingController city = TextEditingController();
   TextEditingController state = TextEditingController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late AuthProvider auth;
   String profilePic = '';
   late User user;
@@ -125,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return;
       }
       // print('uploading');
-      auth.uploadToS3Bucket(
+      await auth.uploadToS3Bucket(
           image: _image!, objectName: objectName, objectType: objectType);
       setState(() {});
       ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
@@ -278,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 name: name.text,
                 profession: profession.text,
                 state: state.text);
-            Navigator.of(context).pop();
+            if (mounted) Navigator.of(context).pop();
             ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
                 .showSnackBar(SnackBar(
               content: Text(result
@@ -339,6 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
+    super.initState();
     auth = Provider.of<AuthProvider>(context, listen: false);
     user = auth.loadedUser;
     myInit(user);

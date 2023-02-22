@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import 'authModule/providers/advertisment_provider.dart';
 import 'authModule/providers/family_provider.dart';
+import 'authModule/screens/confirm_otp_screen.dart';
 import 'authModule/screens/phone_number_login_screen.dart';
 import 'featuresModule/providers/search_provider.dart';
 import 'homeModule/models/saathi_model.dart';
@@ -25,7 +23,9 @@ loadSaathis(responseData, members, fetchType) {
         dob: DateTime.parse(rs['dob']),
         email: rs['email'],
         profession: rs['profession'] ?? 'DOCTORRR',
-        place: rs['place'] ?? 'DOCTORRR',
+        city: rs['city'] ?? 'DOCTORRR',
+        pincode: rs['pincode'] ?? 'DOCTORRR',
+        state: rs['state'] ?? 'DOCTORRR',
         phone: rs['phone'] ?? 'DOCTORRR',
         gender: rs['gender'] ?? 'DOCTORRR',
         avatar: rs['avatar'] ?? '',
@@ -139,29 +139,40 @@ showDialogBox({
   );
 }
 
+pushOtpScreen(BuildContext context, phone) {
+  Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => OtpScreen(
+                number: phone,
+              )));
+}
+
 pushPhoneNumberScreen(context,) {
   Navigator.pushReplacement(context,
-      MaterialPageRoute(builder: ((context) => PhoneNumberLoginScreen())));
+      MaterialPageRoute(
+          builder: ((context) => const PhoneNumberLoginScreen())));
 }
 
 pushHomeScreen(context) {
   Navigator.of(context).pushReplacement<void, void>(MaterialPageRoute<void>(
-    builder: (BuildContext context) => HomeScreenWidget(),
+    builder: (BuildContext context) => const HomeScreenWidget(),
   ));
 }
 
-loadFamily(familyId, id,context) {
-  Provider.of<FamiliesProvider>(context, listen: false)
+loadFamily(familyId, id, context) async {
+  await Provider.of<FamiliesProvider>(context, listen: false)
       .loadFamilyandRelations(familyId, id);
 }
 
-loadEvents(context) {
-  Provider.of<SearchProvider>(context, listen: false)
+loadEvents(context) async {
+  await Provider.of<SearchProvider>(context, listen: false)
       .fetchBirthdaysAndAnniversary();
 }
 
-loadAdvertisments(context) {
-  Provider.of<AdvertismentProvider>(context, listen: false).fetchAdvertisment();
+loadAdvertisments(context) async {
+  await Provider.of<AdvertismentProvider>(context, listen: false)
+      .fetchAdvertisment();
 }
 
 

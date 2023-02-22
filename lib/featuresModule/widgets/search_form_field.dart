@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 
 class SearchFormField extends StatefulWidget {
@@ -10,8 +7,8 @@ class SearchFormField extends StatefulWidget {
   final FocusNode? nextFocusNode;
   final double tS;
   final String hintText;
-  bool isBirthAnniv;
-  SearchFormField(
+  final bool isBirthAnniv;
+  const SearchFormField(
       {required this.hintText,
       required this.controller,
       required this.tS,
