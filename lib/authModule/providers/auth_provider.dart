@@ -157,12 +157,12 @@ class AuthProvider with ChangeNotifier {
 
   // ! editUseer
   editUser({
-    String? name,
-    String? email,
-    String? profession,
-    String? city,
-    String? state,
-    DateTime? birth,
+    required String name,
+    required String email,
+    required String profession,
+    required String city,
+    required String state,
+    required DateTime birth,
   }) async {
     var str = {
       "id": loadedUser.id,
@@ -171,7 +171,7 @@ class AuthProvider with ChangeNotifier {
       'profession': profession,
       'state': state,
       'email': email,
-      'dob': DateFormat('yyyy-MM-dd').format(birth!),
+      'dob': DateFormat('yyyy-MM-dd').format(birth),
     };
 
     // print(str);
@@ -179,25 +179,22 @@ class AuthProvider with ChangeNotifier {
       var url = "${webApi['domain']}/users/updateUserDetails/";
       var response = await http.post(Uri.parse(url), body: str);
       var responseData = json.decode(response.body);
-      if (kDebugMode) {
-        print(responseData);
-      }
       if (responseData != null) {
         loadedUser = User(
           address: responseData['user']['address'],
-          city: responseData['user']['city'],
+          city: city,
           pincode: responseData['user']['pincode'],
-          profession: responseData['user']['profession'] ?? '',
-          name: responseData['user']['name'],
-          dob: DateTime.parse(responseData['user']['dob']),
+          profession: profession,
+          name: name,
+          dob: birth,
           id: responseData['user']['_id'],
           gender: responseData['user']['gender'],
           avatar: responseData['user']['avatar'],
           married: responseData['user']['married'] == 'Married' ? true : false,
           phone: responseData['user']['phone'],
           familyId: responseData['user']['familyId'] ?? '',
-          email: responseData['user']['email'],
-          state: responseData['user']['state'],
+          email: email,
+          state: state,
         );
         notifyListeners();
         return true;

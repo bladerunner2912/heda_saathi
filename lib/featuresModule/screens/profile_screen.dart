@@ -4,6 +4,7 @@ import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/widgets/genreric_header.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -42,10 +43,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<TextEditingController> s = [];
   pickImage() async {
     await showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+          // <-- SEE HERE
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(16.0),
+          ),
+        ),
+        elevation: 3,
         context: context,
         builder: (context) {
-          return Wrap(children: [
-            Row(
+          return Container(
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(16),
+                    topLeft: Radius.circular(16))),
+            child: Row(
               children: [
                 const Spacer(),
                 GestureDetector(
@@ -60,7 +72,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.camera, size: dW * 0.1),
+                        const Spacer(),
+                        Icon(
+                          Icons.camera,
+                          size: dW * 0.1,
+                          color: Colors.blue,
+                        ),
                         const Spacer(),
                         const Text('Camera'),
                         const Spacer(),
@@ -82,7 +99,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.browse_gallery, size: dW * 0.1),
+                        const Spacer(),
+                        Icon(
+                          Icons.browse_gallery,
+                          size: dW * 0.1,
+                          color: Colors.red,
+                        ),
                         const Spacer(),
                         const Text('Gallery'),
                         const Spacer(),
@@ -98,20 +120,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const Spacer(),
               ],
             ),
-          ]);
+          );
         });
 
     final XFile? image = await _picker.pickImage(
       source: source,
-      maxWidth: dW * 0.5,
-      maxHeight: dW * 0.5,
+      maxWidth: 1000,
+      maxHeight: 1000,
       imageQuality: 100,
     );
 
     // ! ignore: use_build_context_synchronously
 
     if (image != null) {
-      _image = File(image.path);
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressQuality: 100,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        compressFormat: ImageCompressFormat.jpg,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            statusBarColor: Colors.deepOrange.shade900,
+            activeControlsWidgetColor: Colors.deepOrange.shade900,
+          ),
+          IOSUiSettings(
+            title: 'Crop Image',
+            cancelButtonTitle: 'Cancel',
+            doneButtonTitle: 'Save',
+            aspectRatioLockEnabled: true,
+            aspectRatioPickerButtonHidden: true,
+            minimumAspectRatio: 1.0,
+          ),
+        ],
+      );
+
+      _image = File(croppedFile!.path);
       String objectName = fileName(_image!);
       String objectType = fileType(_image!);
       if (objectType != "png" && objectType != "jpg" && objectType != "jpeg") {
@@ -146,7 +194,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     PermissionStatus permissionStatus = await permission.request();
 
-
     if (permissionStatus == PermissionStatus.restricted) {
       _showOpenAppSettingsDialog(context);
       permissionStatus = await permission.status;
@@ -175,6 +222,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (permissionStatus != PermissionStatus.granted) {
         //Only continue if permission granted
+        ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
+            .showSnackBar(const SnackBar(
+          content: Text("Permission request was denied for uploading photo."),
+          backgroundColor: Colors.redAccent,
+        ));
         return;
       }
     }
@@ -206,7 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         lastDate: DateTime.now()) as DateTime;
 
     if (selectedDate != user.dob) {
-      textController.text = DateFormat('dd/MM/yy').format(selectedDate);
+      textController.text = DateFormat('dd MMMM yyyy').format(selectedDate);
       edited = true;
       setState(() {});
     }
@@ -245,12 +297,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         (name.text != user.name ||
             email.text != user.email ||
             profession.text != user.profession ||
-            dob.text != DateFormat('dd/MM/yy').format(user.dob) ||
+            dob.text != DateFormat('dd MMMM yyyy').format(user.dob) ||
             city.text != user.city ||
             state.text != user.state)) {
       for (var ss in s) {
         if (ss.text == '') {
-          Navigator.of(context).pop();
+          editable = false;
+          myInit(user);
+          setState(() {});
           ScaffoldMessenger.of(_scaffoldKey.currentState!.context)
               .showSnackBar(const SnackBar(
             content: Text("You cant update with empty information."),
@@ -265,7 +319,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           buttonOne: 'Yes',
           buttonOneFunction: () async {
             var result = await auth.editUser(
-                birth: DateFormat('dd/MM/yyyy').parse(dob.text),
+                birth: DateFormat('dd MMMM yyyy').parse(dob.text),
                 city: city.text,
                 email: email.text,
                 name: name.text,
@@ -303,7 +357,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     name.text = user.name;
     mobileNo.text = user.phone;
     email.text = user.email;
-    dob.text = DateFormat('dd/MM/yy').format(user.dob);
+    dob.text = DateFormat('dd MMMM yyyy').format(user.dob);
     if (user.married) {
       anniv.text =
           '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
@@ -336,6 +390,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     auth = Provider.of<AuthProvider>(context, listen: false);
     user = auth.loadedUser;
     myInit(user);
+  }
+ 
+  @override
+  void dispose() {
+    super.dispose();
+    for (var element in s) {
+      element.dispose();
+    }
   }
 
   @override
@@ -376,15 +438,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(
                     height: dW * 0.04,
                   ),
-                  CircleAvatar(
-                    radius: dW * 0.2,
-                    foregroundImage: NetworkImage(
-                      user.avatar,
-                      // scale: 1,
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    width: dW * 0.55,
+                    height: dW * 0.5,
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
-                    backgroundImage:
-                        const AssetImage("assets/images/menProfile.jpg"),
+                    child: FadeInImage.assetNetwork(
+                      width: dW * 0.55,
+                      height: dW * 0.5,
+                      image: user.avatar,
+                      placeholder: user.gender == 'Male'
+                          ? 'assets/images/indian_men.png'
+                          : 'assets/images/indian_women.png',
+                      imageErrorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: dW * 0.55,
+                          height: dW * 0.5,
+                          color: Colors.black,
+                          padding: user.gender == 'Male'
+                              ? const EdgeInsets.all(0)
+                              : EdgeInsets.symmetric(
+                                  horizontal: dW * 0.0265,
+                                ),
+                          child: Image.asset(
+                            user.gender == 'Male'
+                                ? 'assets/images/indian_men.png'
+                                : 'assets/images/indian_women.png',
+                            fit: BoxFit.fitHeight,
+                          ),
+                        );
+                      },
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
+
+                  // CircleAvatar(
+                  //   radius: dW * 0.2,
+                  //   foregroundImage: NetworkImage(
+                  //     user.avatar,
+                  //     // scale: 1,
+                  //   ),
+                  //   backgroundImage:
+                  //       const AssetImage("assets/images/indian_men.png"),
+                  // ),
                   const SizedBox(
                     height: 12,
                   ),
@@ -578,8 +677,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           //             ).image,
           //             placeholder: AssetImage(
           //               user.gender == 'Male'
-          //                   ? 'assets/images/menProfile.jpg'
-          //                   : 'assets/images/womenProfile.png',
+          //                   ? 'assets/images/indian_men.png'
+          //                   : 'assets/images/indian_women.png',
           //             ),
           //             imageErrorBuilder: (context, error, stackTrace) {
           //               return Container(
@@ -598,8 +697,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           //                       )
           //                     : Image.asset(
           //                         user.gender == 'Male'
-          //                             ? 'assets/images/menProfile.jpg'
-          //                             : 'assets/images/womenProfile2.png',
+          //                             ? 'assets/images/indian_men.png'
+          //                             : 'assets/images/indian_women.png',
           //                       ),
           //               );
           //             },

@@ -58,7 +58,7 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
     name.text = user.name;
     mobileNo.text = user.phone;
     email.text = user.email.toLowerCase();
-    dob.text = DateFormat('dd/MM/yy').format(user.dob);
+    dob.text = DateFormat('dd MMMM yyyy').format(user.dob);
     // if (user.married) {
     //   anniv.text =
     //       '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
@@ -101,43 +101,40 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  SizedBox(
-                    height: dW * 0.35,
-                    width: dW * 0.35,
-                    child: Container(
-                      clipBehavior: Clip.hardEdge,
-                      decoration: const BoxDecoration(shape: BoxShape.circle),
-                      width: dW * 0.35,
-                      child: FadeInImage(
-                        width: dW * 0.35,
-                        image: Image.network(
-                          user.avatar!,
-                          fit: BoxFit.fitWidth,
-                        ).image,
-                        placeholder: AssetImage(
-                          user.gender == 'Male'
-                              ? 'assets/images/menProfile.jpg'
-                              : 'assets/images/womenProfile.png',
-                        ),
-                        imageErrorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.white,
-                            padding: user.gender == 'Male'
-                                ? const EdgeInsets.all(0)
-                                : EdgeInsets.symmetric(
-                                    horizontal: dW * 0.0265,
-                                  ),
-                            width: dW * 0.35,
-                            height: dW * 0.35,
-                            child: Image.asset(
-                              user.gender == 'Male'
-                                  ? 'assets/images/menProfile.jpg'
-                                  : 'assets/images/womenProfile2.png',
-                            ),
-                          );
-                        },
-                        fit: BoxFit.cover,
-                      ),
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    width: dW * 0.55,
+                    height: dW * 0.5,
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    child: FadeInImage.assetNetwork(
+                      width: dW * 0.55,
+                      height: dW * 0.5,
+                      image: user.avatar!,
+                      placeholder: user.gender == 'Male'
+                          ? 'assets/images/indian_men.png'
+                          : 'assets/images/indian_women.png',
+                      imageErrorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: dW * 0.55,
+                          height: dW * 0.5,
+                          color: Colors.cyan.shade100,
+                          padding: user.gender == 'Male'
+                              ? const EdgeInsets.all(0)
+                              : EdgeInsets.symmetric(
+                                  horizontal: dW * 0.0265,
+                                ),
+                          child: Image.asset(
+                            user.gender == 'Male'
+                                ? 'assets/images/indian_men.png'
+                                : 'assets/images/indian_women.png',
+                            fit: BoxFit.fitHeight,
+                          ),
+                        );
+                      },
+                      fit: BoxFit.fitHeight,
                     ),
                   ),
                   SizedBox(

@@ -175,10 +175,10 @@ class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
                           height: dW * 0.1,
                           label: 'Search Saathi',
                           buttonFunction: (() async {
-                            if (name.text.length > 2 ||
-                                place.text.length > 2 ||
-                                phone.text.length > 2 ||
-                                profession.text.length > 2) {
+                            if (name.text.trim().length > 2 ||
+                                place.text.trim().length > 2 ||
+                                phone.text.trim().length > 2 ||
+                                profession.text.trim().length > 2) {
                               loading = true;
                               setState(() {});
                               Provider.of<SearchProvider>(context,
@@ -187,10 +187,10 @@ class _SearchFunctionScreenState extends State<SearchFunctionScreen> {
                               await Provider.of<SearchProvider>(context,
                                       listen: false)
                                   .searchSaathi(
-                                      name: name.text,
-                                      place: place.text,
-                                      profession: profession.text,
-                                      phone: phone.text);
+                                      name: name.text.trim(),
+                                      place: place.text.trim(),
+                                      profession: profession.text.trim(),
+                                      phone: phone.text.trim());
                               loading = false;
                               setState(() {});
                               if (mounted) {

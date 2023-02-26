@@ -68,8 +68,8 @@
 //                   image: NetworkImage(
 //                       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQI5x6k5q5YKfpLFGxrcRui0giJxnDfMByNNA&usqp=CAU'),
 //                   placeholder: AssetImage(widget.gender == 'Male'
-//                       ? 'assets/images/menProfile.jpg'
-//                       : 'assets/images/womenProfile.png'),
+//                       ? 'assets/images/indian_men.png'
+//                       : 'assets/images/indian_women.png'),
 //                   imageErrorBuilder: (context, error, stackTrace) {
 //                     return Container(
 //                       color: Colors.white,
@@ -82,8 +82,8 @@
 //                       height: widget.dW * 0.22,
 //                       child: Image.asset(
 //                         widget.gender == 'Male'
-//                             ? 'assets/images/menProfile.jpg'
-//                             : 'assets/images/womenProfile.png',
+//                             ? 'assets/images/indian_men.png'
+//                             : 'assets/images/indian_women.png',
 //                       ),
 //                     );
 //                   },

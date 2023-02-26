@@ -1,6 +1,6 @@
 var webApi = {
-  'domain': 'https://heda-saathi.onrender.com' //prod
-  // 'domain': 'https://5129-103-124-143-154.in.ngrok.io' //dev
+  // 'domain': 'https://heda-saathi.onrender.com' //prod
+  'domain': 'https://530e-182-48-222-223.in.ngrok.io' //dev
 }; 
 
 var endPoints = {

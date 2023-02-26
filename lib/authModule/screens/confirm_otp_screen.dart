@@ -161,11 +161,11 @@ class _OtpScreenState extends State<OtpScreen> {
             CustomAuthButton(
                 onTap: () async {
                   if (auth.otp == otp) {
-                    loadUserAndFamily();
                     errorFlag = true;
                     setState(
                       () => {},
                     );
+                    loadUserAndFamily();
                     if (mounted) {
                       Navigator.pushReplacement(
                           context,
@@ -173,6 +173,11 @@ class _OtpScreenState extends State<OtpScreen> {
                               builder: (_) => const HomeScreenWidget()));
                       return;
                     }
+                  } else {
+                    errorFlag = true;
+                    setState(
+                      () => {},
+                    );
                   }
                 },
                 buttonLabel: 'SUBMIT'),

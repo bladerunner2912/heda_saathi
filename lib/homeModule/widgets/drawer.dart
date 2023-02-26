@@ -5,7 +5,7 @@ import 'package:heda_saathi/common_functions.dart';
 import 'package:heda_saathi/featuresModule/screens/birthday_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/help_screen.dart';
 import 'package:heda_saathi/featuresModule/screens/profile_screen.dart';
-import 'package:heda_saathi/featuresModule/screens/search_screen.dart';
+import 'package:heda_saathi/featuresModule/screens/search_function_screen.dart';
 import 'package:heda_saathi/homeModule/screens/add_saathi_screen.dart';
 import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -64,6 +64,8 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
         );
+
+
     return Drawer(
       width: dW * 0.7,
       child: SizedBox(
@@ -121,7 +123,7 @@ class CustomDrawer extends StatelessWidget {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               drawerTile('PROFILE', ProfileScreen(), context),
-              drawerTile('ABHMS SEARCH', SearchScreen(), context),
+              drawerTile('ABHMS SEARCH', SearchFunctionScreen(), context),
               drawerTile('ABHMS HELP', HelpScreen(), context),
               drawerTile('BIRTHDAY & ANNIVERSARY', BirthdayScreen(), context),
             ]),
@@ -159,37 +161,34 @@ class CustomDrawer extends StatelessWidget {
             color: Colors.black,
             thickness: 0.24,
           ),
-          GestureDetector(
-           
-            child: Padding(
-                padding: EdgeInsets.only(
-                    left: dW * 0.04, top: dW * 0.015, bottom: dW * 0.04),
-                child: GestureDetector(
-                  // style: ButtonStyle(
-                  //     backgroundColor: MaterialStateProperty.resolveWith((states) {
-                  //   if (states.contains(MaterialState.pressed)) {
-                  //     return isLogout ? Colors.green : Colors.red;
-                  //   }
-                  //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
-                  // })),
-                  onTap: () {
-                    auth.logout(context);
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: 12,
-                      top: 12,
-                    ),
-                    child: SizedBox(
-                      width: 240,
-                      child: Text(
-                        'LOGOUT',
-                        style: TextStyle(fontSize: 22, color: Colors.red),
-                      ),
+          Padding(
+              padding: EdgeInsets.only(
+                  left: dW * 0.04, top: dW * 0.015, bottom: dW * 0.04),
+              child: GestureDetector(
+                // style: ButtonStyle(
+                //     backgroundColor: MaterialStateProperty.resolveWith((states) {
+                //   if (states.contains(MaterialState.pressed)) {
+                //     return isLogout ? Colors.green : Colors.red;
+                //   }
+                //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
+                // })),
+                onTap: () {
+                  auth.logout(context);
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: 12,
+                    top: 12,
+                  ),
+                  child: SizedBox(
+                    width: 240,
+                    child: Text(
+                      'LOGOUT',
+                      style: TextStyle(fontSize: 22, color: Colors.red),
                     ),
                   ),
-                )),
-          )
+                ),
+              ))
         ],
       )),
     );

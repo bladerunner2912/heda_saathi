@@ -47,8 +47,8 @@ class FamilyWidget extends StatelessWidget {
               width: dW * 0.27,
               image: Image.network(saathi.avatar!).image,
               placeholder: AssetImage(saathi.gender == 'Male'
-                  ? 'assets/images/menProfile.jpg'
-                  : 'assets/images/womenProfile.png'),
+                  ? 'assets/images/indian_men.png'
+                  : 'assets/images/indian_women.png'),
               imageErrorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.white,
@@ -61,8 +61,8 @@ class FamilyWidget extends StatelessWidget {
                   height: dW * 0.27,
                   child: Image.asset(
                     saathi.gender == 'Male'
-                        ? 'assets/images/menProfile.jpg'
-                        : 'assets/images/womenProfile.png',
+                        ? 'assets/images/indian_men.png'
+                        : 'assets/images/indian_women.png',
                   ),
                 );
               },

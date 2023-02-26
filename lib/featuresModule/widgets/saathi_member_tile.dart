@@ -39,37 +39,37 @@ class SearchScreenTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
+              clipBehavior: Clip.hardEdge,
               width: dW * 0.23,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+              height: dW * 0.23,
+              decoration: BoxDecoration(
+                color: Colors.cyan.shade100,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(12),
                   bottomLeft: Radius.circular(12),
                 ),
               ),
               child: FadeInImage.assetNetwork(
                 width: dW * 0.23,
+                height: dW * 0.23,
                 image: saathi.avatar!,
                 placeholder: saathi.gender == 'Male'
-                    ? 'assets/images/menProfile.jpg'
-                    : 'assets/images/womenProfile.png',
+                    ? 'assets/images/indian_men.png'
+                    : 'assets/images/indian_women.png',
                 imageErrorBuilder: (context, error, stackTrace) {
                   return Container(
                     width: dW * 0.23,
-                    color: Colors.white,
-                    padding: saathi.gender == 'Male'
-                        ? const EdgeInsets.all(0)
-                        : EdgeInsets.symmetric(
-                            horizontal: dW * 0.0265,
-                          ),
+                    height: dW * 0.23,
+                    color: Colors.cyan.shade100,
                     child: Image.asset(
                       saathi.gender == 'Male'
-                          ? 'assets/images/menProfile.jpg'
-                          : 'assets/images/womenProfile2.png',
+                          ? 'assets/images/indian_men.png'
+                          : 'assets/images/indian_women.png',
                       fit: BoxFit.fitHeight,
                     ),
                   );
                 },
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.fitHeight,
               ),
             ),
             const Spacer(),

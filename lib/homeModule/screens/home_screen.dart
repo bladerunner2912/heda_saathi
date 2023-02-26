@@ -142,13 +142,11 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
                 ),
               ),
               label: 'Home',
-              icon: GestureDetector(
-                onTap: () => switchBottomNavBar(0),
-                child: SizedBox(
-                  width: dW * 0.33,
-                  child: const Icon(
-                    Icons.home_outlined,
-                  ),
+              icon: SizedBox(
+                width: dW * 0.33,
+                child: IconButton(
+                  onPressed: () => switchBottomNavBar(0),
+                  icon: const Icon(Icons.home_outlined),
                 ),
               )),
           BottomNavigationBarItem(
@@ -163,15 +161,13 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
             ),
             icon: SizedBox(
               width: dW * 0.33,
-              child: GestureDetector(
-                onTap: () {
-                  switchBottomNavBar(1);
-                },
-                child: SizedBox(
-                  width: dW * 0.33,
-                  child: const Icon(
-                    Icons.chat_bubble_outline_outlined,
-                  ),
+              child: SizedBox(
+                width: dW * 0.31,
+                child: IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline_outlined),
+                  onPressed: () {
+                    switchBottomNavBar(1);
+                  },
                 ),
               ),
             ),
@@ -188,8 +184,9 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
               child: Stack(children: [
                 SizedBox(
                   width: dW * 0.33,
-                  child: const Icon(
-                    Icons.notifications_none,
+                  child: IconButton(
+                    onPressed: () => switchBottomNavBar(2),
+                    icon: const Icon(Icons.notifications_none),
                   ),
                 ),
                 if (unviewedNotifications.isNotEmpty)

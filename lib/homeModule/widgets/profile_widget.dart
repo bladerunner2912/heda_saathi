@@ -32,7 +32,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          Container(
+            clipBehavior: Clip.hardEdge,
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(12))),
             height: widget.dW * 0.27,
             width: widget.dW * 0.27,
             child: FadeInImage(
@@ -43,8 +46,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 fit: BoxFit.contain,
               ).image,
               placeholder: AssetImage(user.gender == 'Male'
-                  ? 'assets/images/menProfile.jpg'
-                  : 'assets/images/womenProfile.png'),
+                  ? 'assets/images/indian_men.png'
+                  : 'assets/images/indian_women.png'),
               imageErrorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.white,
@@ -57,12 +60,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   height: widget.dW * 0.27,
                   child: Image.asset(
                     user.gender == 'Male'
-                        ? 'assets/images/menProfile.jpg'
-                        : 'assets/images/womenProfile.png',
+                        ? 'assets/images/indian_men.png'
+                        : 'assets/images/indian_women.png',
                   ),
                 );
               },
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.contain,
             ),
           ),
           SizedBox(

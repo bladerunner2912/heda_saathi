@@ -56,8 +56,8 @@ class BirthdayAnnivesaryTile extends StatelessWidget {
                 width: dW * 0.23,
                 image: saathi.avatar!,
                 placeholder: saathi.gender == 'Male'
-                    ? 'assets/images/menProfile.jpg'
-                    : 'assets/images/womenProfile.png',
+                    ? 'assets/images/indian_men.png'
+                    : 'assets/images/indian_women.png',
                 imageErrorBuilder: (context, error, stackTrace) {
                   return Container(
                     width: dW * 0.23,
@@ -69,8 +69,8 @@ class BirthdayAnnivesaryTile extends StatelessWidget {
                           ),
                     child: Image.asset(
                       saathi.gender == 'Male'
-                          ? 'assets/images/menProfile.jpg'
-                          : 'assets/images/womenProfile2.png',
+                          ? 'assets/images/indian_men.png'
+                          : 'assets/images/indian_women.png',
                       fit: BoxFit.fitHeight,
                     ),
                   );
