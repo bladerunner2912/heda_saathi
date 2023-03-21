@@ -13,7 +13,7 @@ import '../models/saathi_model.dart';
 import '../widgets/family_widget.dart';
 import '../widgets/profile_widget.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
     required this.dW,
@@ -30,68 +30,76 @@ class HomePage extends StatelessWidget {
   final List<Advertisment> advertisments;
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   Widget build(BuildContext context) {
     var user = Provider.of<AuthProvider>(context).loadedUser;
     return Container(
       color: Colors.white,
-      width: dW,
-      height: dH,
+      width: widget.dW,
+      height: widget.dH,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(
-          height: dW * 0.005,
+          height: widget.dW * 0.005,
         ),
         Center(
           child: Text(
             'SMARIKA REGISTERATION NO : 2022123${user.id.substring(1, 3).toUpperCase()}',
-            style: TextStyle(fontSize: 14 * tS),
+            style: TextStyle(fontSize: 14 * widget.tS),
           ),
         ),
         SizedBox(
-          height: dW * 0.005,
+          height: widget.dW * 0.005,
         ),
         GestureDetector(
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (context) => const ProfileScreen())),
           child: ProfileWidget(
-            dW: dW,
-            tS: tS,
+            dW: widget.dW,
+            tS: widget.tS,
           ),
         ),
         Padding(
           padding: EdgeInsets.only(
-              top: dW * 0.02, left: dW * 0.05, bottom: dW * 0.02),
+              top: widget.dW * 0.02,
+              left: widget.dW * 0.05,
+              bottom: widget.dW * 0.02),
           child: Text(
             'My Family',
             style: TextStyle(
-              fontSize: 20 * tS,
+              fontSize: 20 * widget.tS,
             ),
           ),
         ),
         SizedBox(
           // color: Colors.teal.shade50.withOpacity(0.3),
-          width: dW,
+          width: widget.dW,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             child: Row(children: [
               ...List.generate(
-                  familyMembers.length,
+                  widget.familyMembers.length,
                   (index) => GestureDetector(
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SaathiProfileScreen(
-                                        memeberId: familyMembers[index].userId,
+                                        memeberId:
+                                            widget.familyMembers[index].userId,
                                         isFamilyMember: true,
                                       )));
                         },
                         child: FamilyWidget(
-                          dW: dW,
-                          tS: tS,
-                          saathi: familyMembers[index],
+                          dW: widget.dW,
+                          tS: widget.tS,
+                          saathi: widget.familyMembers[index],
                           first: index == 0 ? true : false,
-                          last: index == (familyMembers.length - 1)
+                          last: index == (widget.familyMembers.length - 1)
                               ? true
                               : false,
                         ),
@@ -107,15 +115,17 @@ class HomePage extends StatelessWidget {
                         .withOpacity(0.2),
                   ),
                   margin: EdgeInsets.only(
-                      left: familyMembers.isEmpty ? dW * 0.035 : dW * 0.02,
-                      right: dW * (0.37)),
+                      left: widget.familyMembers.isEmpty
+                          ? widget.dW * 0.035
+                          : widget.dW * 0.02,
+                      right: widget.dW * (0.37)),
                   padding: EdgeInsets.only(
-                      bottom: dW * 0.005,
-                      left: dW * 0.06,
-                      right: dW * 0.06,
-                      top: dW * 0.04),
-                  width: dW * 0.42,
-                  height: dW * 0.5,
+                      bottom: widget.dW * 0.005,
+                      left: widget.dW * 0.06,
+                      right: widget.dW * 0.06,
+                      top: widget.dW * 0.04),
+                  width: widget.dW * 0.42,
+                  height: widget.dW * 0.5,
                   child: Center(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -137,20 +147,22 @@ class HomePage extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.only(
-              top: dW * 0.025, left: dW * 0.05, bottom: dW * 0.02),
+              top: widget.dW * 0.025,
+              left: widget.dW * 0.05,
+              bottom: widget.dW * 0.02),
           child: Text(
             'Advertisment',
             style: TextStyle(
-              fontSize: 20 * tS,
+              fontSize: 20 * widget.tS,
             ),
           ),
         ),
         CarouselSlider(
             items: List.generate(
-                advertisments.length,
+                widget.advertisments.length,
                 (index) => GestureDetector(
                       onTap: () async {
-                        String url = advertisments[index].websiteUrl;
+                        String url = widget.advertisments[index].websiteUrl;
                         var urllaunchable = await canLaunchUrl(
                           Uri.parse(url),
                         ); //canLaunch is from url_launcher package
@@ -161,7 +173,7 @@ class HomePage extends StatelessWidget {
                               ),
                               mode: LaunchMode
                                   .externalApplication); //launch is from url_launcher package to launch URL
-                        } else {
+                        } else if (mounted) {
                           showDialogBox(
                               context: context,
                               dialogmessage:
@@ -170,20 +182,20 @@ class HomePage extends StatelessWidget {
                               buttonOneFunction: () {
                                 Navigator.pop(context);
                               },
-                              dW: dW,
-                              tS: tS);
+                              dW: widget.dW,
+                              tS: widget.tS);
                         }
                       },
                       child: Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: Image.network(
-                                        advertisments[index].posterUrl)
+                                        widget.advertisments[index].posterUrl)
                                     .image,
                                 fit: BoxFit.fill,
                                 filterQuality: FilterQuality.high)),
                         margin: EdgeInsets.symmetric(
-                          vertical: dW * 0.01,
+                          vertical: widget.dW * 0.01,
                         ),
                       ),
                     )),
