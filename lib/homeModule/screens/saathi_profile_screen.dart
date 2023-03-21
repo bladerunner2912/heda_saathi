@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/saathi_model.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SaathiProfileScreen extends StatefulWidget {
   final String memeberId;
@@ -354,8 +355,8 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
                   });
                 }
               }),
-              child: Icon(
-                Icons.whatsapp,
+              child: FaIcon(
+                FontAwesomeIcons.whatsapp,
                 size: dW * 0.1,
                 color: Colors.green,
               ),
