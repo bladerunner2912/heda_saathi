@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_launch/flutter_launch.dart';
 import 'package:heda_saathi/authModule/providers/family_provider.dart';
 import 'package:heda_saathi/authModule/widgets/app_bar.dart';
 import 'package:heda_saathi/featuresModule/providers/search_provider.dart';
@@ -342,18 +341,29 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
                   backgroundColor: Colors.white,
                   padding: const EdgeInsets.all(4)),
               onPressed: (() async {
-                bool whatsapp = await FlutterLaunch.hasApp(name: "whatsapp");
-
-                if (whatsapp) {
-                  await FlutterLaunch.launchWhatsapp(
-                      phone: "91${mobileNo.text}",
-                      message: "Hello,${name.text} ji!");
-                } else {
-                  setState(() {
-                    err = false;
-                    msgErr = '';
-                  });
+                String whatsapp = mobileNo.text;
+                var whatsappAndroid =
+                    Uri.parse("whatsapp://send?phone=$whatsapp&text=hello");
+                if (await canLaunchUrl(whatsappAndroid)) {
+                  await launchUrl(whatsappAndroid);
+                } else if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("WhatsApp is not installed on the device"),
+                    ),
+                  );
                 }
+
+                // if (whatsapp) {
+                //   await FlutterLaunch.launchWhatsapp(
+                //       phone: "91${mobileNo.text}",
+                //       message: "Hello,${name.text} ji!");
+                // } else {
+                //   setState(() {
+                //     err = false;
+                //     msgErr = 'Error';
+                //   });
+                // }
               }),
               child: FaIcon(
                 FontAwesomeIcons.whatsapp,

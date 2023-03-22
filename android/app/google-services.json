@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "453487598991",
-    "project_id": "hedaji-2b9e8",
-    "storage_bucket": "hedaji-2b9e8.appspot.com"
+    "project_number": "943572096253",
+    "project_id": "heda-saathi-293a6",
+    "storage_bucket": "heda-saathi-293a6.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:453487598991:android:fe45c9a5efc9001d6d3ffa",
+        "mobilesdk_app_id": "1:943572096253:android:294af44f7437c2fd4d1a94",
         "android_client_info": {
-          "package_name": "com.example.heda_saathi"
+          "package_name": "com.techredo.heda_saathi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "453487598991-5urhshojl1mofcmhalvsrg5k73165k1a.apps.googleusercontent.com",
+          "client_id": "943572096253-e9it4konru40hu8mhe1rqrh0mn2btpvk.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD5UHlJBUPNLMDu-pdkdaPIJRwYKEa3jGA"
+          "current_key": "AIzaSyAIIr_ItQx_g-SNHLtWfhdJTCN89QTj5yI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "453487598991-5urhshojl1mofcmhalvsrg5k73165k1a.apps.googleusercontent.com",
+              "client_id": "943572096253-e9it4konru40hu8mhe1rqrh0mn2btpvk.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
