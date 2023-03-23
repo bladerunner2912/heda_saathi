@@ -27,7 +27,7 @@ class AddSaathiScreen extends StatelessWidget {
             buttonFunction: () async {
               String url =
                   "https://docs.google.com/forms/d/e/1FAIpQLSckpF9w-QPHJvLFnbewDXvZuoRBd5gW-ZLnolEXGYFg0gd5yg/viewform?usp=sf_link";
-              var urllaunchable = await canLaunchUrl(
+              bool urllaunchable = await canLaunchUrl(
                   Uri.parse(url)); //canLaunch is from url_launcher package
               if (urllaunchable) {
                 await launchUrl(Uri.parse(

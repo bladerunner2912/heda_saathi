@@ -11,7 +11,6 @@ import 'package:heda_saathi/homeModule/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class CustomDrawer extends StatelessWidget {
   final double dW;
   final double tS;
@@ -64,7 +63,6 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
         );
-
 
     return Drawer(
       width: dW * 0.7,
@@ -194,5 +192,3 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 }
-
-

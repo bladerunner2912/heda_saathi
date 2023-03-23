@@ -342,8 +342,8 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
                   padding: const EdgeInsets.all(4)),
               onPressed: (() async {
                 String whatsapp = mobileNo.text;
-                var whatsappAndroid =
-                    Uri.parse("whatsapp://send?phone=$whatsapp&text=hello");
+                var whatsappAndroid = Uri.parse(
+                    "whatsapp://send?phone=$whatsapp&text=${Uri.encodeFull("Hello (Via : Heda Saathi)")}");
                 if (await canLaunchUrl(whatsappAndroid)) {
                   await launchUrl(whatsappAndroid);
                 } else if (mounted) {
