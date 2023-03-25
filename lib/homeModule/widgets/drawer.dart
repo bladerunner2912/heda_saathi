@@ -148,7 +148,8 @@ class CustomDrawer extends StatelessWidget {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               drawerTile(
-                  'MAHASABHA SCHEMES', 'https://www.techredo.in', context),
+                  'MAHASABHA SCHEMES', 'https://www.techredo.in', context,
+                  isWebPage: true),
               drawerTile('SAATHI REGISTERATION', AddSaathiScreen(), context),
               drawerTile(
                   'CONTACT US', 'https://www.techredo.in/Contact_Us/', context,

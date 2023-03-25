@@ -35,25 +35,6 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
   }
 
   myInit() async {
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? android = message.notification?.android;
-    //   print(notification);
-    //   print(android);
-    //   if (notification != null && android != null) {
-    //     flutterLocalNotificationsPlugin.show(
-    //         notification.hashCode,
-    //         notification.title,
-    //         notification.body,
-    //         NotificationDetails(
-    //           android: AndroidNotificationDetails(
-    //             channel.id,
-    //             channel.name,
-    //             priority: Priority.high,
-    //           ),
-    //         ));
-    //   }
-    // });
     setState(() {
       loading = true;
     });

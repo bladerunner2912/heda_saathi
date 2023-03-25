@@ -16,6 +16,11 @@ class NotificationProvider with ChangeNotifier {
     try {
       var response = await http.get(Uri.parse(url));
       var responseBody = json.decode(response.body);
+      if (responseBody.length == _notifications.length) {
+        return;
+      } else {
+        _notifications.clear();
+      }
       for (int i = 0; i < responseBody.length; i++) {
         var rs = responseBody[i];
         _notifications.add(Notifications(

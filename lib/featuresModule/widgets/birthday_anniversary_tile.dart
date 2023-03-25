@@ -75,7 +75,7 @@ class BirthdayAnnivesaryTile extends StatelessWidget {
                     ),
                   );
                 },
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.fitHeight,
               ),
             ),
             Container(

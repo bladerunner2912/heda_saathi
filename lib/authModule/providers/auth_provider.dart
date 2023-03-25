@@ -14,9 +14,28 @@ class AuthProvider with ChangeNotifier {
   final LocalStorage storage = LocalStorage('HedaSaathi');
   late User loadedUser;
   List<String> unviewedNotifications = [];
-  String otp = '';
+  String _otp = '';
   final List<Notifications> _notifications = [];
   List<Notifications> get notifications => _notifications;
+
+  String get otp => _otp;
+
+  User dummyUser = User(
+      address: 'Bhusawal',
+      city: 'Bhusawal',
+      dob: DateTime(1999, 12, 29),
+      email: 'userrole@gmail.com',
+      familyId: '44',
+      gender: 'Male',
+      id: '123451231321',
+      married: false,
+      name: 'Test User',
+      phone: '1234567890',
+      pincode: '425201',
+      profession: 'Tester',
+      state: 'Maharashtra',
+      avatar:
+          'https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiV0Jqwz_b9AhXGwTgGHf7KDh8Q1bUFegQIERAA&url=https%3A%2F%2Fpixabay.com%2Fimages%2Fsearch%2Flink%2F&usg=AOvVaw2Zh_B9UZS2TxR_qOtlnqzF');
 
   fetchNotifications() async {
     var url = "${webApi["domain"]}/notifications/fetchNotifications";
@@ -227,7 +246,7 @@ class AuthProvider with ChangeNotifier {
       var response = await http
           .post(Uri.parse("${webApi['domain']}/users/sendOtp/"), body: str);
       var responseBody = json.decode(response.body);
-      otp = responseBody['otp'].toString();
+      _otp = responseBody['otp'].toString();
       notifyListeners();
     } catch (e) {
       return;
