@@ -60,7 +60,7 @@ class SearchScreenTile extends StatelessWidget {
                   return Container(
                     width: dW * 0.23,
                     height: dW * 0.23,
-                    color: Colors.cyan.shade100,
+                    color: Colors.grey.shade50,
                     child: Image.asset(
                       saathi.gender == 'Male'
                           ? 'assets/images/indian_men.png'

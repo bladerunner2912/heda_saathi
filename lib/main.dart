@@ -11,7 +11,6 @@ import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'authModule/screens/splash_screen.dart';
-import 'featuresModule/providers/notifications_provider.dart';
 
 final LocalStorage storage = LocalStorage('HedaSaathi');
 
@@ -69,8 +68,7 @@ Future<void> main() async {
     badge: true,
   );
 
-  onSelectNotification(dynamic payload) async {
-  }
+  onSelectNotification(dynamic payload) async {}
 
   // // onDidRecieveLocalNotification(
   // //     int id, String? title, String? body, String? payload) {
@@ -205,7 +203,6 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => FamiliesProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => SearchProvider()),
-        ChangeNotifierProvider(create: (context) => NotificationProvider()),
         ChangeNotifierProvider(create: (context) => AdvertismentProvider())
       ],
       child: const MyApp(),

@@ -42,17 +42,22 @@ class AuthProvider with ChangeNotifier {
     try {
       var response = await http.get(Uri.parse(url));
       var responseBody = json.decode(response.body);
+      var notifications = [];
       for (int i = 0; i < responseBody.length; i++) {
         var rs = responseBody[i];
-        _notifications.add(Notifications(
+        notifications.add(Notifications(
           id: rs['_id'],
           content: rs['content'],
           title: rs['title'],
           webUrl: rs['webUrl'],
           recievedAt: DateTime.parse(rs['createdAt']),
         ));
-        notifyListeners();
       }
+      _notifications.clear();
+      for (var n in notifications) {
+        _notifications.add(n);
+      }
+      notifyListeners();
     } catch (e) {
       return;
     }
@@ -256,9 +261,9 @@ class AuthProvider with ChangeNotifier {
   // ! checkUserExists
   checkUserExists({required String phone}) async {
     var url = "${webApi['domain']}/users/checkUserExists";
-    var str = json.encode({
+    var str = {
       "phone": phone,
-    });
+    };
 
     try {
       var response = await http.post(Uri.parse(url), body: str);

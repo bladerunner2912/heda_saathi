@@ -178,14 +178,16 @@ class _OtpScreenState extends State<OtpScreen> {
                           setState(
                             () => {},
                           );
-                          loadUserAndFamily();
+                          // loadUserAndFamily();
                           isLoading = false;
                           setState(() {});
                           if (mounted) {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => const HomeScreenWidget()));
+                                    builder: (_) => HomeScreenWidget(
+                                          phone: phoneNumberController.text,
+                                        )));
                           }
                         } else {
                           errorFlag = true;

@@ -35,16 +35,17 @@ class BirthdayAnnivesaryTile extends StatelessWidget {
       },
       child: Container(
         clipBehavior: Clip.hardEdge,
-        height: dW * 0.22,
+        height: dW * 0.23,
         margin: EdgeInsets.only(
             top: dW * (isTop ? 0.025 : 0.01), bottom: dW * 0.01),
+        width: dW,
         decoration: BoxDecoration(
             color: Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12)),
-        width: dW,
         child: Row(
           children: [
             Container(
+              height: dW * 0.23,
               width: dW * 0.23,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -54,6 +55,7 @@ class BirthdayAnnivesaryTile extends StatelessWidget {
               ),
               child: FadeInImage.assetNetwork(
                 width: dW * 0.23,
+                height: dW * 0.23,
                 image: saathi.avatar!,
                 placeholder: saathi.gender == 'Male'
                     ? 'assets/images/indian_men.png'

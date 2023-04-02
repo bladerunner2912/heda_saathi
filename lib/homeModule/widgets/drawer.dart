@@ -22,15 +22,27 @@ class CustomDrawer extends StatelessWidget {
     final auth = Provider.of<AuthProvider>(context);
     drawerTile(name, onPressed, context,
             {bool isLogout = false, bool isWebPage = false}) =>
-        GestureDetector(
-          // style: ButtonStyle(
-          //     backgroundColor: MaterialStateProperty.resolveWith((states) {
-          //   if (states.contains(MaterialState.pressed)) {
-          //     return isLogout ? Colors.green : Colors.red;
-          //   }
-          //   return isLogout ? Colors.redAccent : Color.fromARGB(255, 111, 108, 108);
-          // })),
-          onTap: isWebPage
+        TextButton(
+          style: ButtonStyle(
+              foregroundColor:
+                  MaterialStateColor.resolveWith((states) => Colors.black),
+              alignment: Alignment.centerLeft,
+              overlayColor: MaterialStateColor.resolveWith(
+                  (states) => Colors.amberAccent),
+              fixedSize: MaterialStateProperty.resolveWith(
+                  (states) => Size.fromWidth(dW)),
+              padding: MaterialStateProperty.resolveWith((states) =>
+                  EdgeInsets.only(
+                      top: dW * 0.01, bottom: dW * 0.01, left: dW * 0.04))),
+          // style: TextButton.styleFrom(
+          //     animationDuration: Duration(milliseconds: 50),
+          //     foregroundColor: Colors.black87,
+          //      surfaceTintColor: ,
+          //     alignment: Alignment.centerLeft,
+          //     fixedSize: Size.fromWidth(dW),
+          //     padding: EdgeInsets.only(
+          //         top: dW * 0.01, bottom: dW * 0.01, left: dW * 0.04)),
+          onPressed: isWebPage
               ? () async {
                   String url = onPressed;
                   var urllaunchable = await canLaunchUrl(
@@ -48,20 +60,32 @@ class CustomDrawer extends StatelessWidget {
                     ));
                   }
                 }
-              : () => navigator(context, onPressed),
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: 12,
-              top: 12,
-            ),
-            child: SizedBox(
-              width: 240,
-              child: Text(
-                name,
-                style: TextStyle(fontSize: isLogout ? 22 : 18),
-              ),
-            ),
+              : () {
+                  navigator(context, onPressed);
+                },
+          child: Text(
+            name,
+            style: TextStyle(fontSize: isLogout ? 22 : 18),
           ),
+
+          // Container(
+          //   color: Colors.black,
+          //   // decoration: BoxDecoration(
+          //   //     color: Colors.amberAccent.shade700.withOpacity(0.8),
+          //   //     border: Border.all(color: Colors.black, width: 1)),
+          //   width: dW,
+          //   child: Padding(
+          //     padding: EdgeInsets.only(
+          //       bottom: dW * 0.03,
+          //       top: dW * 0.03,
+          //       left: dW * 0.04,
+          //     ),
+          //     child: Text(
+          //       name,
+          //       style: TextStyle(fontSize: isLogout ? 22 : 18),
+          //     ),
+          //   ),
+          // ),
         );
 
     return Drawer(
@@ -114,9 +138,8 @@ class CustomDrawer extends StatelessWidget {
             color: Colors.black,
             thickness: 0.5,
           ),
-          Container(
+          SizedBox(
             width: dW,
-            padding: EdgeInsets.only(left: dW * 0.04, top: dW * 0.02),
             // EdgeInsets.only(left: widget.dW * 0.04, top: widget.dW * 0.08),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -127,9 +150,8 @@ class CustomDrawer extends StatelessWidget {
             ]),
           ),
           const Spacer(),
-          Container(
+          SizedBox(
             width: dW,
-            padding: EdgeInsets.only(left: dW * 0.04, top: dW * 0.04),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               drawerTile(
@@ -142,9 +164,8 @@ class CustomDrawer extends StatelessWidget {
             ]),
           ),
           const Spacer(),
-          Container(
+          SizedBox(
             width: dW,
-            padding: EdgeInsets.only(left: dW * 0.04, top: dW * 0.04),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               drawerTile(

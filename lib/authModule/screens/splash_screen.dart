@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../common_functions.dart';
+import '../../homeModule/screens/home_screen.dart';
 import '../../main.dart';
-import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -47,22 +46,21 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
     if (mounted) {
-      final user = await Provider.of<AuthProvider>(context, listen: false)
-          .loginUser(phone: accessToken['phone']);
-      if (user != null) {
-        loadFamily(user.familyId, user.id, context);
-        if (mounted) loadEvents(context);
-        setState(() {
-          isLoading = false;
-        });
-        if (mounted) pushHomeScreen(context);
-        return;
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        if (mounted) pushPhoneNumberScreen(context);
-      }
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (_) => HomeScreenWidget(
+                    phone: accessToken['phone'],
+                  )));
+      return;
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      if (mounted) pushPhoneNumberScreen(context);
     }
   }
 

@@ -48,7 +48,9 @@ elevatedButton({
           fontSize: fontSize,
           fontWeight: FontWeight.w700,
         )),
-        fixedSize: MaterialStatePropertyAll<Size>(Size(width, height)),
+        minimumSize: MaterialStatePropertyAll<Size>(Size(width, height)),
+        maximumSize:
+            MaterialStatePropertyAll<Size>(Size(width * 2, height * 2)),
         backgroundColor:
             MaterialStatePropertyAll<Color>(buttonColor ?? Colors.amber),
         foregroundColor:
@@ -135,7 +137,6 @@ showDialogBox({
     barrierLabel: "Barrier",
     barrierDismissible: true,
     barrierColor: Colors.black.withOpacity(0.5),
-   
   );
 }
 
@@ -148,8 +149,11 @@ pushOtpScreen(BuildContext context, phone) {
               )));
 }
 
-pushPhoneNumberScreen(context,) {
-  Navigator.pushReplacement(context,
+pushPhoneNumberScreen(
+  context,
+) {
+  Navigator.pushReplacement(
+      context,
       MaterialPageRoute(
           builder: ((context) => const PhoneNumberLoginScreen())));
 }
@@ -174,8 +178,6 @@ loadAdvertisments(context) async {
   await Provider.of<AdvertismentProvider>(context, listen: false)
       .fetchAdvertisment();
 }
-
-
 
 String fileName(File file) {
   return file.path.split("/").last;

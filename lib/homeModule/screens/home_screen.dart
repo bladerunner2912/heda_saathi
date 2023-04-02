@@ -8,11 +8,13 @@ import 'package:heda_saathi/homeModule/widgets/chat_screen_section.dart';
 import 'package:heda_saathi/homeModule/widgets/drawer.dart';
 import 'package:provider/provider.dart';
 import '../../authModule/providers/family_provider.dart';
+import '../../common_functions.dart';
 import '../widgets/custom_home_screen_app_bar.dart';
 
 class HomeScreenWidget extends StatefulWidget {
   final int currentIndex;
-  const HomeScreenWidget({super.key, this.currentIndex = 0});
+  final String phone;
+  const HomeScreenWidget({super.key, this.currentIndex = 0, this.phone = ''});
 
   @override
   State<HomeScreenWidget> createState() => _HomeScreenWidgetState();
@@ -39,9 +41,10 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
       loading = true;
     });
     currentIndex = widget.currentIndex;
-
     loadNotifications();
-
+    final user = await Provider.of<AuthProvider>(context, listen: false)
+        .loginUser(phone: widget.phone);
+    if (mounted) loadFamily(user.familyId, user.id, context);
     setState(() {
       loading = false;
     });
@@ -74,11 +77,12 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
         child: CustomHomeScreenAppBar(dW: dW, scaffoldKey: scaffoldKey, tS: tS),
       ),
       body: loading
-          ? const Center(
+          ? Center(
               child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
+                width: dW * 0.04,
+                height: dW * 0.04,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
                   color: Colors.amber,
                 ),
               ),

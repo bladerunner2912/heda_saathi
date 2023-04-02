@@ -159,46 +159,61 @@ class _HomePageState extends State<HomePage> {
         ),
         CarouselSlider(
             items: List.generate(
-                widget.advertisments.length,
-                (index) => GestureDetector(
-                      onTap: () async {
-                        String url = widget.advertisments[index].websiteUrl;
-                        var urllaunchable = await canLaunchUrl(
-                          Uri.parse(url),
-                        ); //canLaunch is from url_launcher package
-                        if (urllaunchable) {
-                          await launchUrl(
-                              Uri.parse(
-                                url,
-                              ),
-                              mode: LaunchMode
-                                  .externalApplication); //launch is from url_launcher package to launch URL
-                        } else if (mounted) {
-                          showDialogBox(
-                              context: context,
-                              dialogmessage:
-                                  'Cant open the website due to some issues',
-                              buttonOne: 'Ok',
-                              buttonOneFunction: () {
-                                Navigator.pop(context);
-                              },
-                              dW: widget.dW,
-                              tS: widget.tS);
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: Image.network(
-                                        widget.advertisments[index].posterUrl)
-                                    .image,
-                                fit: BoxFit.fill,
-                                filterQuality: FilterQuality.high)),
-                        margin: EdgeInsets.symmetric(
-                          vertical: widget.dW * 0.01,
+              widget.advertisments.length,
+              (index) => GestureDetector(
+                onTap: () async {
+                  String url = widget.advertisments[index].websiteUrl;
+                  var urllaunchable = await canLaunchUrl(
+                    Uri.parse(url),
+                  ); //canLaunch is from url_launcher package
+                  if (urllaunchable) {
+                    await launchUrl(
+                        Uri.parse(
+                          url,
                         ),
-                      ),
-                    )),
+                        mode: LaunchMode
+                            .externalApplication); //launch is from url_launcher package to launch URL
+                  } else if (mounted) {
+                    showDialogBox(
+                        context: context,
+                        dialogmessage:
+                            'Cant open the website due to some issues',
+                        buttonOne: 'Ok',
+                        buttonOneFunction: () {
+                          Navigator.pop(context);
+                        },
+                        dW: widget.dW,
+                        tS: widget.tS);
+                  }
+                },
+                child: FadeInImage.assetNetwork(
+                    width: widget.dW,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    placeholder: 'assets/images/advertismentPlaceholder.jpg',
+                    image: widget.advertisments[index].posterUrl),
+                // child: Container(
+                //   width: widget.dW,
+                //   decoration: BoxDecoration(
+                //       image: DecorationImage(
+                //     image: FadeInImage.assetNetwork(
+                //             width: widget.dW,
+                //             fit: BoxFit.fill,
+                //             filterQuality: FilterQuality.high,
+                //             placeholder:
+                //                 'assets/images/advertismentPlaceholder.png',
+                //             image: widget.advertisments[index].posterUrl)
+                //         .image,
+
+                //     // image: Image.network(
+                //     //         widget.advertisments[index].posterUrl)
+                //     //     .image,
+                //   )),
+                //   // margin: EdgeInsets.symmetric(
+                //   //   vertical: widget.dW * 0.01,
+                //   ),
+              ),
+            ),
             options: CarouselOptions(
                 viewportFraction: 1,
                 autoPlay: true,

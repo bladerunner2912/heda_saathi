@@ -120,7 +120,7 @@ class _SaathiProfileScreenState extends State<SaathiProfileScreen> {
                         return Container(
                           width: dW * 0.55,
                           height: dW * 0.5,
-                          color: Colors.cyan.shade100,
+                          color: Colors.black,
                           padding: user.gender == 'Male'
                               ? const EdgeInsets.all(0)
                               : EdgeInsets.symmetric(
