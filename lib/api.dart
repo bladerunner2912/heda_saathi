@@ -3,17 +3,17 @@ var webApi = {
   // 'domain': 'https://530e-182-48-222-223.in.ngrok.io' //dev
 };
 
-var endPoints = {
-  //Auth Modulek
-  'loginUser': 'users/loginUser',
-  'searchMembers': 'users/searchMembers',
-  'fetchMembers': 'users/fetchMembers',
+// var endPoints = {
+//   //Auth Modulek
+//   'loginUser': 'users/loginUser',
+//   'searchMembers': 'users/searchMembers',
+//   'fetchMembers': 'users/fetchMembers',
 
-  //User Module
+//   //User Module
 
-  //Feature Module
+//   //Feature Module
 
-  //Notification Module
+//   //Notification Module
 
-  //Chat Module
-};
+//   //Chat Module
+// };

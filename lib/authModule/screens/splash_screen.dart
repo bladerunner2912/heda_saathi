@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../common_functions.dart';
 import '../../homeModule/screens/home_screen.dart';
 import '../../main.dart';
+import '../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -27,40 +29,36 @@ class _SplashScreenState extends State<SplashScreen> {
     setState(() {
       isLoading = true;
     });
-    if (mounted) loadAdvertisments(context);
-    final accessTokenString = storage.getItem('accessToken');
-    if (accessTokenString == null && mounted) {
-      setState(() {
-        isLoading = false;
-      });
-      pushPhoneNumberScreen(context);
-      return;
-    }
-    var accessToken = json.decode(accessTokenString);
-
-    if (accessToken == null && mounted) {
-      setState(() {
-        isLoading = false;
-      });
-      pushPhoneNumberScreen(context);
-      return;
-    }
     if (mounted) {
+      loadAdvertisments(context);
+      final accessTokenString = storage.getItem('accessToken');
+      if (accessTokenString == null) {
+        setState(() {
+          isLoading = false;
+        });
+        pushPhoneNumberScreen(context);
+        return;
+      }
+      var accessToken = json.decode(accessTokenString);
+      if (accessToken != null) {
+        setState(() {
+          isLoading = false;
+        });
+        pushPhoneNumberScreen(context);
+        return;
+      }
       setState(() {
         isLoading = false;
       });
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (_) => HomeScreenWidget(
-                    phone: accessToken['phone'],
-                  )));
+      if (accessToken['phone'] != '' && accessToken['phone'] != null) {
+        Provider.of<AuthProvider>(context, listen: false).phone =
+            accessToken['phone'];
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (_) => const HomeScreenWidget()));
+        return;
+      }
+      pushPhoneNumberScreen(context);
       return;
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      if (mounted) pushPhoneNumberScreen(context);
     }
   }
 

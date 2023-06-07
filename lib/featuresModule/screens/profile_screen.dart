@@ -358,10 +358,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     mobileNo.text = user.phone;
     email.text = user.email;
     dob.text = DateFormat('dd MMMM yyyy').format(user.dob);
-    if (user.married) {
-      anniv.text =
-          '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
-    }
+    // if (user.married) {
+    //   anniv.text =
+    //       '${user.anniv!.day}/${user.anniv!.month}/${user.anniv!.year}';
+    // }
     profilePic = user.avatar;
     profession.text = user.profession;
     city.text = user.city;
@@ -391,7 +391,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     user = auth.loadedUser;
     myInit(user);
   }
- 
+
   @override
   void dispose() {
     super.dispose();
@@ -641,7 +641,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Note - Phone number cannot be changed. For that contact us at hedaSaathi@gmail.com',
+                              'Note - Phone number cannot be changed. For that contact via ABHMS Help or hedasangathanaapp@gmail.com',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 14 * tS,

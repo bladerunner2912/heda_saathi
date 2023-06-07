@@ -18,14 +18,18 @@ class FamiliesProvider with ChangeNotifier {
 
   Family get family => _family;
 
+// ! MAIN FUNCTION
   loadFamilyandRelations(String familyId, String userId) async {
     familyMembers.clear();
     _family = Family(id: '', memberIds: [], metaData: [[]]);
 
+    // fetches the family from database
     await fetchFamily(familyId: familyId);
 
+    // fetches the members data from database
     await fetchMembers(userId: userId);
 
+    // loads the relations based on the _relations array.
     loadRelations(userId);
     notifyListeners();
   }
@@ -80,18 +84,27 @@ class FamiliesProvider with ChangeNotifier {
 
   loadRelations(userId) {
     int i = 0;
+    //iterates over all the members present in the family
     for (var id in family.memberIds) {
+      // ? if index == userIndex then remove that from members list as we dont need to see our own profile.
       if (i == userIndex) {
         familyMembers.removeAt(i);
         i++;
         continue;
       }
+
+      // ? checks the relation metadataId for the family.
       var metaDataId = family.metaData[userIndex][i];
-      var flag = 1;
+
+      // ? flag to control reverse
+      var flag = 0;
+
+      // ?
       if (metaDataId < 0) {
         metaDataId = metaDataId * (-1);
-        flag = 0;
+        flag = 1;
       }
+
       familyMembers.firstWhere((saathi) => saathi.userId == id).relation =
           _relations[metaDataId][flag];
       i++;
@@ -100,22 +113,32 @@ class FamiliesProvider with ChangeNotifier {
 
   // /*IMP!*/
   static const List<List<String>> _relations = [
-    ['SELF', 'SELF'],
-    ['HUSBAND', 'WIFE'],
-    ['FATHER', 'SON'],
-    ['FATHER', 'DAUGHTER'],
-    ['MOTHER', 'SON'],
-    ['MOTHER', 'DAUGHTER'],
-    ['BROTHER', 'SISTER'],
-    ['BROTHER', 'BROTHER'],
-    ['UNCLE', 'NIECE'],
-    ['AUNT', 'NIECE'],
-    ['COUSIN', 'COUSIN'],
-    ['GRANDFATHER', 'GRANDSON'],
-    ['GRANDMOTHER', 'GRANDSON'],
-    ['GRANDFATHER', 'GRANDDAUGHTER'],
-    ['GRANDMOTHER', 'GRANDDAUGHTER'],
-    ['FATHER IN LAW', 'SON-IN-LAW'],
-    ['FATHER IN LAW', 'DAUGHTER-IN-LAW']
+    ['Self', 'Self'],
+    ['Husband', 'Wife'],
+    ['Father', 'Son'],
+    ['Mother', 'Son'],
+    ['Father', 'Daughter'],
+    ['Mother', 'Daughter'],
+    ["Father I/L", "Daughter I/L"],
+    ["Mother I/L", "Daughter I/L"],
+    ["Grand Father", "Grand Son"],
+    ["Grand Mother", "Grand Son"],
+    ["Grand Father", "Grand Daughter"],
+    ["Grand Mother", "Grand Daughter"],
+    ["Grand Father I/L", "Grand Daughter I/L"],
+    ["Grand Mother I/L", "Grand Daughter I/L"],
+    ["Uncle", "Nephew"],
+    ["Aunt", "Nephew"],
+    ["Uncle", "Neice"],
+    ["Aunt", "Neice"],
+    ["Brother", "Brother"],
+    ["Brother", "Sister"],
+    ["Sister", "Sister"],
+    ["Brother I/L", "Sister I/L"],
+    ["Sister I/L", "Sister I/L"],
+    ["Cousin", "Cousin"],
+    ["Father I/L", "Son I/L"],
+    ["Mother I/L", "Son I/L"],
+    ["Brother I/L", "Brother I/L"],
   ];
 }

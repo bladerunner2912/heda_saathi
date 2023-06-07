@@ -22,14 +22,14 @@ loadSaathis(responseData, members, fetchType) {
         userId: rs['userId'],
         dob: DateTime.parse(rs['dob']),
         email: rs['email'],
-        profession: rs['profession'] ?? 'DOCTORRR',
-        city: rs['city'] ?? 'DOCTORRR',
-        pincode: rs['pincode'] ?? 'DOCTORRR',
-        state: rs['state'] ?? 'DOCTORRR',
-        phone: rs['phone'] ?? 'DOCTORRR',
-        gender: rs['gender'] ?? 'DOCTORRR',
+        profession: rs['profession'] ?? '',
+        city: rs['city'] ?? '',
+        pincode: rs['pincode'] ?? '',
+        state: rs['state'] ?? '',
+        phone: rs['phone'] ?? '',
+        gender: rs['gender'] ?? '',
         avatar: rs['avatar'] ?? '',
-        name: rs['name'] ?? 'DOCTORRR'));
+        name: rs['name'] ?? ''));
   }
 }
 
@@ -145,7 +145,7 @@ pushOtpScreen(BuildContext context, phone) {
       context,
       MaterialPageRoute(
           builder: (context) => OtpScreen(
-                number: phone,
+                phone: phone,
               )));
 }
 

@@ -41,26 +41,28 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
 
       final user = await Provider.of<AuthProvider>(context, listen: false)
           .checkUserExists(phone: phoneNumberController.text);
-
-      if (user) {
-        // loadFamily(
-        //   user.familyId,
-        //   user.id,
-        // );
-        if (mounted) loadEvents(context);
-        await auth.sendOtp(phoneNumber: phoneNumberController.text);
-        isLoading = false;
-        setState(() {});
-        if (mounted) pushOtpScreen(context, phoneNumberController.text);
-      } else if (phoneNumberController.text == '1234567890') {
-        if (mounted) loadEvents(context);
-        isLoading = false;
-        setState(() {});
-        if (mounted) pushOtpScreen(context, phoneNumberController.text);
-      } else {
-        errorFlag = !errorFlag;
-        isLoading = false;
-        setState(() {});
+      if (mounted) {
+        if (user) {
+          loadEvents(context);
+          await auth.sendOtp(phoneNumber: phoneNumberController.text);
+          isLoading = false;
+          auth.phone = phoneNumberController.text;
+          setState(() {});
+          if (mounted) pushOtpScreen(context, phoneNumberController.text);
+        }
+        //tester Scenario
+        else if (phoneNumberController.text == '1234567890') {
+          loadEvents(context);
+          isLoading = false;
+          setState(() {});
+          pushOtpScreen(context, phoneNumberController.text);
+        }
+        //error scenario
+        else {
+          errorFlag = !errorFlag;
+          isLoading = false;
+          setState(() {});
+        }
       }
     }
   }

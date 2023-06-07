@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/family_model.dart';
+import 'package:heda_saathi/authModule/models/user_modal.dart';
 import 'package:heda_saathi/authModule/providers/advertisment_provider.dart';
 import 'package:heda_saathi/authModule/providers/auth_provider.dart';
 import 'package:heda_saathi/featuresModule/screens/notifications_screen.dart';
@@ -13,8 +14,11 @@ import '../widgets/custom_home_screen_app_bar.dart';
 
 class HomeScreenWidget extends StatefulWidget {
   final int currentIndex;
-  final String phone;
-  const HomeScreenWidget({super.key, this.currentIndex = 0, this.phone = ''});
+
+  const HomeScreenWidget({
+    super.key,
+    this.currentIndex = 0,
+  });
 
   @override
   State<HomeScreenWidget> createState() => _HomeScreenWidgetState();
@@ -41,10 +45,14 @@ class _HomeScreenWidgetState extends State<HomeScreenWidget> {
       loading = true;
     });
     currentIndex = widget.currentIndex;
+    String phone = Provider.of<AuthProvider>(context, listen: false).phone;
     loadNotifications();
-    final user = await Provider.of<AuthProvider>(context, listen: false)
-        .loginUser(phone: widget.phone);
-    if (mounted) loadFamily(user.familyId, user.id, context);
+    await Provider.of<AuthProvider>(context, listen: false)
+        .loginUser(phone: phone);
+    if (mounted) {
+      User user = Provider.of<AuthProvider>(context, listen: false).loadedUser;
+      loadFamily(user.familyId, user.id, context);
+    }
     setState(() {
       loading = false;
     });

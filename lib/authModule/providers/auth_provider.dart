@@ -13,6 +13,7 @@ import '../../featuresModule/models/notification.dart';
 class AuthProvider with ChangeNotifier {
   final LocalStorage storage = LocalStorage('HedaSaathi');
   late User loadedUser;
+  String phone = '';
   List<String> unviewedNotifications = [];
   String _otp = '';
   final List<Notifications> _notifications = [];

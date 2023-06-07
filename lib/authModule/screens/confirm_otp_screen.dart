@@ -9,9 +9,9 @@ import '../../common_functions.dart';
 import '../providers/auth_provider.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String number;
+  final String phone;
   const OtpScreen({
-    required this.number,
+    required this.phone,
     super.key,
   });
 
@@ -27,7 +27,7 @@ class _OtpScreenState extends State<OtpScreen> {
   bool isLoading = false;
   @override
   void initState() {
-    phoneNumberController.text = widget.number;
+    phoneNumberController.text = widget.phone;
     super.initState();
   }
 
@@ -120,7 +120,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 controller: controller,
                 onPressed: () async {
                   controller.startTimer();
-                  await auth.sendOtp(phoneNumber: widget.number);
+                  await auth.sendOtp(phoneNumber: widget.phone);
                 },
                 text: const Text(
                   'RESEND OTP',
@@ -159,7 +159,7 @@ class _OtpScreenState extends State<OtpScreen> {
               height: dW * 0.1,
             ),
             CustomAuthButton(
-                onTap: widget.number == '1234567890'
+                onTap: widget.phone == '1234567890'
                     ? () {
                         if ('1234' == otp) {
                           errorFlag = false;
@@ -185,9 +185,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => HomeScreenWidget(
-                                          phone: phoneNumberController.text,
-                                        )));
+                                    builder: (_) => const HomeScreenWidget()));
                           }
                         } else {
                           errorFlag = true;
