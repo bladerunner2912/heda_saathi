@@ -13,7 +13,6 @@ class ProfileWidget extends StatefulWidget {
 
   final double dW;
   final double tS;
-  
 
   @override
   State<ProfileWidget> createState() => _ProfileWidgetState();
@@ -45,23 +44,31 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 user.avatar,
                 fit: BoxFit.contain,
               ).image,
-              placeholder: AssetImage(user.gender == 'Male'
-                  ? 'assets/images/indian_men.png'
-                  : 'assets/images/indian_women.png'),
+              // placeholder: AssetImage(user.gender == 'Male'
+              //     ? 'assets/images/indian_men.png'
+              //     : 'assets/images/indian_women.png'),
+              placeholder: const AssetImage(
+                // user.gender == 'Male'
+                // ?
+                'assets/images/indian_men.png',
+                // : 'assets/images/indian_women.png'
+              ),
               imageErrorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.white,
-                  padding: user.gender == 'Male'
-                      ? const EdgeInsets.all(0)
-                      : EdgeInsets.symmetric(
-                          horizontal: widget.dW * 0.0265,
-                        ),
+                  padding: const EdgeInsets.all(0),
+                  // user.gender == 'Male'
+                  //     ? const EdgeInsets.all(0)
+                  //     : EdgeInsets.symmetric(
+                  //         horizontal: widget.dW * 0.0265,
+                  //       ),
                   width: widget.dW * 0.27,
                   height: widget.dW * 0.27,
                   child: Image.asset(
-                    user.gender == 'Male'
-                        ? 'assets/images/indian_men.png'
-                        : 'assets/images/indian_women.png',
+                    // user.gender == 'Male'
+                    // ?
+                    'assets/images/indian_men.png',
+                    // : 'assets/images/indian_women.png'
                   ),
                 );
               },

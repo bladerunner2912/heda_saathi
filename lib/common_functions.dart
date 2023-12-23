@@ -170,8 +170,8 @@ loadFamily(familyId, id, context) async {
 }
 
 loadEvents(context) async {
-  await Provider.of<SearchProvider>(context, listen: false)
-      .fetchBirthdaysAndAnniversary();
+  // await Provider.of<SearchProvider>(context, listen: false)
+  //     .fetchBirthdaysAndAnniversary();
 }
 
 loadAdvertisments(context) async {

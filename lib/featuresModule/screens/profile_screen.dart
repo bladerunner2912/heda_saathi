@@ -450,23 +450,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: dW * 0.55,
                       height: dW * 0.5,
                       image: user.avatar,
-                      placeholder: user.gender == 'Male'
-                          ? 'assets/images/indian_men.png'
-                          : 'assets/images/indian_women.png',
+                      // placeholder: user.gender == 'Male'
+                      //     ? 'assets/images/indian_men.png'
+                      //     : 'assets/images/indian_women.png',
+
+                      placeholder: 'assets/images/indian_men.png',
                       imageErrorBuilder: (context, error, stackTrace) {
                         return Container(
                           width: dW * 0.55,
                           height: dW * 0.5,
                           color: Colors.black,
-                          padding: user.gender == 'Male'
-                              ? const EdgeInsets.all(0)
-                              : EdgeInsets.symmetric(
-                                  horizontal: dW * 0.0265,
-                                ),
+                          padding: const EdgeInsets.all(0),
+
+                          // user.gender == 'Male'
+                          //     ? const EdgeInsets.all(0)
+                          //     : EdgeInsets.symmetric(
+                          //         horizontal: dW * 0.0265,
+                          //       ),
                           child: Image.asset(
-                            user.gender == 'Male'
-                                ? 'assets/images/indian_men.png'
-                                : 'assets/images/indian_women.png',
+                            // user.gender == 'Male'
+                            //     ? 'assets/images/indian_men.png'
+                            //     : 'assets/images/indian_women.png',
+                            "assets/images/indian_men.png",
                             fit: BoxFit.fitHeight,
                           ),
                         );

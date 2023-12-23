@@ -41,6 +41,7 @@ class _PhoneNumberLoginScreenState extends State<PhoneNumberLoginScreen> {
 
       final user = await Provider.of<AuthProvider>(context, listen: false)
           .checkUserExists(phone: phoneNumberController.text);
+
       if (mounted) {
         if (user) {
           loadEvents(context);

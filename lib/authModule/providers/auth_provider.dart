@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heda_saathi/authModule/models/user_modal.dart';
 import 'package:heda_saathi/authModule/screens/phone_number_login_screen.dart';
@@ -27,7 +26,7 @@ class AuthProvider with ChangeNotifier {
       dob: DateTime(1999, 12, 29),
       email: 'userrole@gmail.com',
       familyId: '44',
-      gender: 'Male',
+      // gender: 'Male',
       id: '123451231321',
       married: false,
       name: 'Test User',
@@ -99,20 +98,20 @@ class AuthProvider with ChangeNotifier {
 
       // dob.replaceAll(RegExp('r/'), '-');
       loadedUser = User(
-        address: responeData['user']['address'],
-        city: responeData['user']['city'],
-        pincode: responeData['user']['pincode'],
+        address: responeData['user']['address'] ?? '',
+        city: responeData['user']['city'] ?? '',
+        pincode: responeData['user']['pincode'] ?? '',
         profession: responeData['user']['profession'] ?? '',
-        name: responeData['user']['name'],
+        name: responeData['user']['name'] ?? '',
         dob: DateTime.parse(responeData['user']['dob']),
         id: responeData['user']['_id'],
-        gender: responeData['user']['gender'],
-        avatar: responeData['user']['avatar'],
+        // gender: responeData['user']['gender'],
+        avatar: responeData['user']['avatar'] ?? "",
         married: responeData['user']['married'] == 'Married' ? true : false,
         phone: responeData['user']['phone'],
         familyId: responeData['user']['familyId'] ?? '',
-        email: responeData['user']['email'],
-        state: responeData['user']['state'],
+        email: responeData['user']['email'] ?? "",
+        state: responeData['user']['state'] ?? "",
       );
       for (int i = 0;
           i < responeData['user']['unviewedNotifications'].length;
@@ -133,6 +132,7 @@ class AuthProvider with ChangeNotifier {
 
       return loadedUser;
     } catch (e) {
+      print(e);
       return null;
     }
   }
@@ -155,6 +155,8 @@ class AuthProvider with ChangeNotifier {
       var response =
           await http.post(Uri.parse(url), headers: headers, body: str);
       final responseData = json.decode(response.body);
+
+      // First calls the /uploadPicUrl api , then gets an url, then we are sending the image from client on this url. We are then posting the avatar link in essence uploaded  pic link such which is written as location below .Uses updateUser function of backend which is specifically made for the update of the the newimage url
       var uploadResponse = await http.put(Uri.parse(responseData['uploadUrl']),
           body: image.readAsBytesSync());
 
@@ -206,14 +208,14 @@ class AuthProvider with ChangeNotifier {
       var responseData = json.decode(response.body);
       if (responseData != null) {
         loadedUser = User(
-          address: responseData['user']['address'],
-          city: city,
+          address: responseData['user']['address'] ?? "",
+          city: responseData['user']['city'] ?? "",
           pincode: responseData['user']['pincode'],
           profession: profession,
           name: name,
           dob: birth,
           id: responseData['user']['_id'],
-          gender: responseData['user']['gender'],
+          // gender: responseData['user']['gender'],
           avatar: responseData['user']['avatar'],
           married: responseData['user']['married'] == 'Married' ? true : false,
           phone: responseData['user']['phone'],
@@ -225,10 +227,10 @@ class AuthProvider with ChangeNotifier {
         return true;
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-        return false;
-      }
+      // if (kDebugMode) {
+      print(" The error in the following is editUser is ${e}");
+      return false;
+      // }
     }
     return false;
   }
@@ -255,6 +257,7 @@ class AuthProvider with ChangeNotifier {
       _otp = responseBody['otp'].toString();
       notifyListeners();
     } catch (e) {
+      print("sendOtp error is ${e}");
       return;
     }
   }
@@ -268,8 +271,10 @@ class AuthProvider with ChangeNotifier {
 
     try {
       var response = await http.post(Uri.parse(url), body: str);
+      print(response.body);
       return json.decode(response.body);
     } catch (e) {
+      print("checkUserExists error is ${e}");
       return false;
     }
   }
